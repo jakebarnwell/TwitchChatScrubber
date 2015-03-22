@@ -1,13 +1,6 @@
 
 
-// from http://stackoverflow.com/questions/7692730/dom-mutation-event-in-jquery-or-vanilla-javascript
-HTMLDivElement.prototype.__appendChild = HTMLDivElement.prototype.appendChild;
-HTMLDivElement.prototype.appendChild = function(){
-    console.log('new item added');
-    // newMessage();
-    // just do the insert here. Only insert it if ___
-    HTMLDivElement.prototype.__appendChild(this,arguments); 
-}
+
 
 var SUBSCRIBER = "Subscriber",
 	TURBO = "Turbo",
