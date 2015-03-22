@@ -65,7 +65,7 @@ function shouldBeDeleted(text, node_badges) {
 	// if any of these are satisfied, we delete. 
 
 	// Order least to most expensive in computation.
-	lengthRestrict = true;
+	lengthRestrict = false;
 	if(lengthRestrict && isTooLong(text)) {
 		return true;
 	}
@@ -79,7 +79,7 @@ function shouldBeDeleted(text, node_badges) {
 	if(trigger && hasTriggerPhrase(text)) {
 		return true;
 	}
-	copyPasta = false;
+	copyPasta = true;
 	if(copyPasta && isCopyPasta(text)) {
 		return true;
 	}
@@ -148,7 +148,7 @@ function hasTriggerPhrase(text) {
 longMessages = [];
 /*
 each longMessage ele is of the form
-{texts: [String], lastAccess: Time, numOccurrences: Number}
+{text: String, lastAccess: Time, numOccurrences: Number}
 */
 var cpLengthThreshold = 100;
 function isCopyPasta(text) {
@@ -169,7 +169,7 @@ function isCopyPasta(text) {
 
 function addCPListing(text) {
 	var newCPListing = {
-		texts: [text],
+		text: text,
 		lastAccess: new Date(),
 		numOccurrences: 1
 	};
@@ -196,7 +196,7 @@ function isAlreadyLogged(text) {
 			continue;
 		}
 
-		var text_distance = CP_distance(text, msg.texts);
+		var text_distance = CP_distance(text, msg.text);
 
 		// for now, assume we want 80% similarity
 		var distThreshold = 0.2;
@@ -204,9 +204,7 @@ function isAlreadyLogged(text) {
 		if(text_distance / text.length <= distThreshold) {
 			msg.lastAccess = new Date();
 			msg.numOccurrences += 1;
-			// if the text wasn't exactly equal to a text stored, add it
-			//  to the set of stored variations of the text
-			if(text_distance > 0) msg.texts.push(text);
+			
 			return true;
 		}
 
@@ -216,16 +214,8 @@ function isAlreadyLogged(text) {
 	return false;
 }
 
-function CP_distance(key, listOfTexts) {
-	return Math.min.apply(null, CP_distances(key, listOfTexts));
-}
-
-function CP_distances(key, listOfTexts) {
-	var dists = [];
-	for(var i = 0; i < listOfTexts.length; i++) {
-		dists.push(text_distance(key, listOfTexts[i]));
-	}
-	return dists;
+function CP_distance(key, text) {
+	return text_distance(key, text);
 }
 
 function text_distance(t1, t2) {
