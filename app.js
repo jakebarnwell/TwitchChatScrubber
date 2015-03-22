@@ -1,5 +1,16 @@
 
+/* the following works in twitch chat atm:
 
+$(".chat-lines").bind("DOMNodeInserted", function(e) {
+	
+
+	x = $(e.target);
+	if(x.is("li")) {
+		x.children(".message").css("background-color", "red");
+	}
+});
+
+*/
 
 
 var SUBSCRIBER = "Subscriber",
