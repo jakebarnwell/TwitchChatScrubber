@@ -1,0 +1,20 @@
+<head>
+	<title>Hello</title>
+	<script type="text/javascript" src="app.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		$("#content").on("change", function() {
+			alert("Hello!");
+		});
+		$("#btn").click(function() {
+			$("#content").appendChild("asdf");
+		});
+	</script>
+
+</head>
+
+<body>
+	This is my test page.<button id="btn">Add</button>
+	<div id="content">
+	</div>
+</body>
