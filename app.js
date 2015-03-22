@@ -1,17 +1,17 @@
 
-/* the following works in twitch chat atm:
-
-$(".chat-lines").bind("DOMNodeInserted", function(e) {
-	
-
-	x = $(e.target);
-	if(x.is("li")) {
-		x.children(".message").css("background-color", "red");
-	}
-});
-
+/*
+should NOT apply deletion to when we have the <li ... class = "... notification"
 */
-
+/*
+dont apply deletion when by a mod (since could be a bot) or broadcaster (since advertising their stream)?
+*/
+/*
+1 emote might be 100 chars since it's in HTML
+*/
+/*
+<deleted msg> ? May be giving my undefined toLowerCase error
+my copyPasta code slowing everything way down after awhile
+*/
 
 var SUBSCRIBER = "Subscriber",
 	TURBO = "Turbo",
@@ -23,10 +23,7 @@ var SUBSCRIBER = "Subscriber",
 
 var POWER = [MODERATOR, BROADCASTER, GLOBALMODERATOR, ADMIN, STAFF]
 
-
 $(".chat-lines").bind("DOMNodeInserted", function(e) {
-	
-
 	x = $(e.target);
 	if(x.is("li")) {
 		var text = x.children(".message").html();
@@ -49,40 +46,9 @@ function handle_deleteMessage(msg) {
 	}
 }
 
-
-/*
-div class = tse-scroll-content
- div class = tse-content
-  ul class = chat-lines
-
-each ele thereof is of the form
-<li id=ember2330 class="ember-view chat-line">
-  ...
-  <span class="badges float-left"... >
-    <div class=" ... " title="Moderator" (Subscriber etc)
-
-  <span class="message"> msg text </span>
-
-*/
-/*
-$(".chat-lines").bind("DOMNodeInserted", function(e) {
-	
-
-	var x = $(e.target);
-	if(x.is("li")) {
-			var badges = [];
-	var y = x.children(".badges").children(".badge");
-		for(var i = 0; i < y.length; y++) {
-			badges.push($(y[i]).attr("title"));
-		}
-	
-	} console.log(badges);
-});
-*/
-
 function shouldBeDeleted(text, node_badges) {
 	// special jquery set
-	var node_arr_badge = badges.children(".badge");
+	var node_arr_badge = node_badges.children(".badge");
 	var badges = [];
 	for(var i = 0; i < node_arr_badge.length; i++) {
 		badges.push($(node_arr_badge[i]).attr("title"));
@@ -91,23 +57,29 @@ function shouldBeDeleted(text, node_badges) {
 	text = text.toLowerCase()
 
 	// overrides all rules so let's put it first:
+	staffPriority = false;
 	if(staffPriority && byStaff(badges)) {
-		return true;
+		return false;
 	}
 
 	// if any of these are satisfied, we delete. 
+
 	// Order least to most expensive in computation.
+	lengthRestrict = true;
 	if(lengthRestrict && isTooLong(text)) {
 		return true;
 	}
 	// they have the option to hide messages from plebs or from
 	//  subs (if the subs have no other authorizations)
+	byAccountStatus = false;
 	if(byAccountStatus && wrongAccountType(badges)) {
 		return true;
 	}
+	trigger = false;
 	if(trigger && hasTriggerPhrase(text)) {
 		return true;
 	}
+	copyPasta = false;
 	if(copyPasta && isCopyPasta(text)) {
 		return true;
 	}
@@ -150,14 +122,14 @@ function wrongAccountType(badges) {
 
 	return false;
 }
-var tooLong_threshold = 200;
+var tooLong_threshold = 100;
 function isTooLong(text) {
 	if(text.length > tooLong_threshold) return true;
 	return false;
 }
 
-triggerPhrases = [];
-trigger_requireDelimited
+var triggerPhrases = [];
+var trigger_requireDelimited
 function hasTriggerPhrase(text) {
 	for(var i = 0; i < triggerPhrases.length; i++) {
 		if(trigger_requireDelimited) {
@@ -178,12 +150,13 @@ longMessages = [];
 each longMessage ele is of the form
 {texts: [String], lastAccess: Time, numOccurrences: Number}
 */
-var cpLengthThreshold = 0;
+var cpLengthThreshold = 100;
 function isCopyPasta(text) {
 	// copyPasta only applies to long copyPasta messages
 	if(text.length > cpLengthThreshold) {
 		var logged = isAlreadyLogged(text);
 		if(logged) { // then it's already there so it's a copy paste
+			console.log("Is logged.");
 			return true;
 		} else { // then add to listing and return false
 			addCPListing(text);
@@ -206,8 +179,8 @@ function addCPListing(text) {
 	return newCPListing;
 }
 
-CP_expiration = 1000 * 60 * 10; // 10 minutes
-CP_expiration = 1000 * 10; // 10 sec for now 
+CP_expiration = 1000 * 60 * 1; // 1 minute
+// CP_expiration = 1000 * 10; // 10 sec for now 
 function isAlreadyLogged(text) {
 
 
@@ -227,6 +200,7 @@ function isAlreadyLogged(text) {
 
 		// for now, assume we want 80% similarity
 		var distThreshold = 0.2;
+		// console.log("difference ratio = " + (text_distance/text.length));
 		if(text_distance / text.length <= distThreshold) {
 			msg.lastAccess = new Date();
 			msg.numOccurrences += 1;
