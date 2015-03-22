@@ -21,27 +21,26 @@ var SUBSCRIBER = "Subscriber",
 	ADMIN = "Admin",
 	STAFF = "Staff";
 
+var POWER = [MODERATOR, BROADCASTER, GLOBALMODERATOR, ADMIN, STAFF]
 
-while(true) {
-	lastMsgFiltered = 0;
-}
 
-function newMessage() {
+$(".chat-lines").bind("DOMNodeInserted", function(e) {
+	
 
-}
+	x = $(e.target);
+	if(x.is("li")) {
+		var text = x.children(".message").html();
+		var badges = x.children(".badges");
 
-$(".tse-content").on("change", function(e) {
-	var msg = $("#of-container.idofmsg");
-	var text = msg.contents();
-
-	if(shouldBeDeleted(text)) {
-		handle_deleteMessage(msg);
+		if(shouldBeDeleted(text, badges)) {
+			handle_deleteMessage(x);
+		}
 	}
-
 });
 
+showDeletedMsgMarker = false;
 function handle_deleteMessage(msg) {
-	$("#of-container").remove(msg);
+	x.css("background-color", "red");
 
 	if(showDeletedMsgMarker) {
 		;
@@ -65,13 +64,34 @@ each ele thereof is of the form
   <span class="message"> msg text </span>
 
 */
+/*
+$(".chat-lines").bind("DOMNodeInserted", function(e) {
+	
 
+	var x = $(e.target);
+	if(x.is("li")) {
+			var badges = [];
+	var y = x.children(".badges").children(".badge");
+		for(var i = 0; i < y.length; y++) {
+			badges.push($(y[i]).attr("title"));
+		}
+	
+	} console.log(badges);
+});
+*/
 
-function shouldBeDeleted(msg, text) {
+function shouldBeDeleted(text, node_badges) {
+	// special jquery set
+	var node_arr_badge = badges.children(".badge");
+	var badges = [];
+	for(var i = 0; i < node_arr_badge.length; i++) {
+		badges.push($(node_arr_badge[i]).attr("title"));
+	}
+	
 	text = text.toLowerCase()
 
 	// overrides all rules so let's put it first:
-	if(staffPriority && byStaff(msg)) {
+	if(staffPriority && byStaff(badges)) {
 		return true;
 	}
 
@@ -80,7 +100,9 @@ function shouldBeDeleted(msg, text) {
 	if(lengthRestrict && isTooLong(text)) {
 		return true;
 	}
-	if(byAccountStatus && wrongAccountType(msg)) {
+	// they have the option to hide messages from plebs or from
+	//  subs (if the subs have no other authorizations)
+	if(byAccountStatus && wrongAccountType(badges)) {
 		return true;
 	}
 	if(trigger && hasTriggerPhrase(text)) {
@@ -93,20 +115,42 @@ function shouldBeDeleted(msg, text) {
 	return false;
 }
 
-function byStaff(msg) {
+function byStaff(badges) {
 	var staffTypes = [];
-	var accountType = 0; // ...
-	if(staffTypes.indexOf(accountType) > -1) return true;
+
+	// the poster can have multiple badges. Need to satisfy at least 1.
+	for(var i = 0; i < badges.length; i++) {
+		if(staffTypes.indexOf(badges[i]) > -1) return true;
+	}
 	return false;
 }
 
-acceptableAccountTypes = [];
-function wrongAccountType(msg) {
-	var accountType = 0; // = ...
-	if(acceptableAccountTypes.indexOf(accountType) > -1) return false;
-	return true;
-}
+hideMessagesFromPlebs = true;
+hideMessagesFromSubs = true; // can contain either/both/neither of sub, pleb
+// ignores turbo status
 
+// if badges = [] or badges = ["Subscriber"]
+//TODO turbo?
+function wrongAccountType(badges) {
+	if(hideMessagesFromPlebs) {
+		if(badges.length === 0) return true;
+	}
+	if(hideMessagesFromSubs) {
+		if(badges.indexOf(SUBSCRIBER) > -1) {
+			for(var i = 0; i < POWER.length; i++) {
+				if(badges.indexOf(POWER[i]) > -1) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	return false;
+}
+var tooLong_threshold = 200;
 function isTooLong(text) {
 	if(text.length > tooLong_threshold) return true;
 	return false;
