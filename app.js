@@ -41,7 +41,7 @@ function handle_deleteMessage(target) {
 	target.css("background-color", "red");
 
 	if(showDeletedMsgMarker) {
-		;
+		$(".chat-lines").append("</hr style=\"{color: red}\">");
 	} else {
 		;
 	}
