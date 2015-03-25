@@ -37,8 +37,8 @@ $(".chat-lines").bind("DOMNodeInserted", function(e) {
 });
 
 showDeletedMsgMarker = false;
-function handle_deleteMessage(msg) {
-	x.css("background-color", "red");
+function handle_deleteMessage(target) {
+	target.css("background-color", "red");
 
 	if(showDeletedMsgMarker) {
 		;
@@ -66,7 +66,7 @@ function shouldBeDeleted(text, node_badges, node_target) {
 	}
 
 	// overrides all rules so let's put it first:
-	staffPriority = false;
+	staffPriority = true;
 	if(staffPriority && byStaff(badges)) {
 		return false;
 	}
@@ -84,7 +84,7 @@ function shouldBeDeleted(text, node_badges, node_target) {
 	if(byAccountStatus && wrongAccountType(badges)) {
 		return true;
 	}
-	trigger = false;
+	trigger = true;
 	if(trigger && hasTriggerPhrase(stripEmotes(text))) {
 		return true;
 	}
@@ -158,7 +158,7 @@ function isTooLong(text) {
 }
 
 var triggerPhrases = [];
-var trigger_requireDelimited
+var trigger_requireDelimited = false;
 function hasTriggerPhrase(text) {
 	for(var i = 0; i < triggerPhrases.length; i++) {
 		if(trigger_requireDelimited) {
@@ -167,7 +167,7 @@ function hasTriggerPhrase(text) {
 			var w = triggerPhrases[i];
 			// does not work correctly with accented/special chars/letters
 			var regex = new RegExp("\\b" + w + "\\b");
-			if(regex.exec(text).length > 0) return true;
+			if(regex.test(text)) return true;
 		}
 	} 
 	
