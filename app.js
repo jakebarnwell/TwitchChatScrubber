@@ -24,14 +24,15 @@ var SUBSCRIBER = "Subscriber",
 var POWER = [MODERATOR, BROADCASTER, GLOBALMODERATOR, ADMIN, STAFF]
 
 $(".chat-lines").bind("DOMNodeInserted", function(e) {
-	x = $(e.target);
-	if(x.is("li")) {
-		var text = x.children(".message").html();
-		var badges = x.children(".badges");
+	var target = $(e.target);
+	if(target.is("li")) {
+		var text = target.children(".message").html();
+		var badges = target.children(".badges");
 
-		if(shouldBeDeleted(text, badges)) {
-			handle_deleteMessage(x);
+		if(shouldBeDeleted(text, badges, target)) {
+			handle_deleteMessage(target);
 		}
+		
 	}
 });
 
@@ -46,15 +47,23 @@ function handle_deleteMessage(msg) {
 	}
 }
 
-function shouldBeDeleted(text, node_badges) {
-	// special jquery set
+function shouldBeDeleted(text, node_badges, node_target) {
+	if(!text) return false;
+
+	// this is a special jquery selection set
 	var node_arr_badge = node_badges.children(".badge");
 	var badges = [];
 	for(var i = 0; i < node_arr_badge.length; i++) {
 		badges.push($(node_arr_badge[i]).attr("title"));
 	}
 	
+
 	text = text.toLowerCase()
+
+	// if it's a notification, never delete it:
+	if(notification_p(node_target)) {
+		return false;
+	}
 
 	// overrides all rules so let's put it first:
 	staffPriority = false;
@@ -76,15 +85,35 @@ function shouldBeDeleted(text, node_badges) {
 		return true;
 	}
 	trigger = false;
-	if(trigger && hasTriggerPhrase(text)) {
+	if(trigger && hasTriggerPhrase(stripEmotes(text))) {
 		return true;
 	}
 	copyPasta = true;
-	if(copyPasta && isCopyPasta(text)) {
+	if(copyPasta && isCopyPasta(reduceEmotes(text))) {
 		return true;
 	}
 
 	return false;
+}
+
+function notification_p(target) {
+	return target.hasClass("notification");
+}
+
+var emote_regex_str = "< *img *class=\\\".*\\\" *src=\\\".*\\\" *alt=\\\".*\\\" *title=\\\".*\\\" *>";
+function reduceEmotes(text) {
+	var emote = new RegExp(emote_regex_str, "gi");
+	return text.replace(emote, "E");
+}
+
+function stripEmotes(text) {
+	var emote = new RegExp(emote_regex_str, "gi");
+	return text.replace(emote, "");
+}
+
+function hasEmotes(text) {
+	var emote = new RegExp(emote_regex_str, "gi");
+	return emote.test(text);
 }
 
 function byStaff(badges) {
