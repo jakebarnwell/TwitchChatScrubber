@@ -22,6 +22,10 @@ var SUBSCRIBER = "Subscriber",
 	STAFF = "Staff";
 
 var POWER = [MODERATOR, BROADCASTER, GLOBALMODERATOR, ADMIN, STAFF];
+var DELETE_TRUE = 1;
+var DELETE_FALSE = -1;
+var DELETE_UNSURE = 0;
+
 var OPTIONS = {
 	staffMessagePriority: true,
 	notificationPriority: true,
@@ -60,33 +64,22 @@ var ALL_POSSIBLE_FILTERS = {
 
 }
 
-var unorderedFilters = {};
-// if(OPTIONS.staffMessagePriority) {
-// 	unorderedFilters.staffMessagePriority = ALL_POSSIBLE_FILTERS.staffMessagePriority;
-// }
-// if(OPTIONS.notificationPriority) {
-// 	unorderedFilters.notificationPriority = ALL_POSSIBLE_FILTERS.notificationPriority;
-// }
-// if(OPTIONS.lengthRestrict) {
-// 	unorderedFilters.lengthRestrict = ALL_POSSIBLE_FILTERS.lengthRestrict;
-// }
-// if(OPTIONS.byAccountStatus) {
-// 	unorderedFilters.byAccountStatus = ALL_POSSIBLE_FILTERS.byAccountStatus;
-// }
-// if(OPTIONS.triggerPhrase) {
-// 	unorderedFilters.triggerPhrase = ALL_POSSIBLE_FILTERS.triggerPhrase;
-// }
-// if(OPTIONS.copyPasta) {
-// 	unorderedFilters.copyPasta = ALL_POSSIBLE_FILTERS.copyPasta;
+var unorderedFilters = [];
 
-// Addes the appropriate filters into our active filter buffer
+// Adds the appropriate filters into our active filter buffer
 for (var key in OPTIONS) {
    	if (OPTIONS.hasOwnProperty(key)) {
    		if(OPTIONS[key] === true) {
-   			unorderedFilters[key] = ALL_POSSIBLE_FILTERS[key];
+   			unorderedFilters.push(ALL_POSSIBLE_FILTERS[key]);
    		}
     }
 }
+
+var orderedFilters = unorderedFilters.slice()
+function sortFilters(f1, f2) {
+	return f1.filter - f2.filter;
+}
+orderedFilters.sort(sortFilters);
 
 // this is a special jquery selection set
 var node_arr_badge = node_badges.children(".badge");
@@ -162,6 +155,29 @@ function handle_deleteMessage(node_target) {
 }
 
 function shouldBeDeleted(node_target) {
+	var chat_line = node_target.children(".chat-line");
+	var text = chat_line.children(".message").html();
+	var badges = chat_line.children(".badges");
+
+	if(!text) {
+		return false;
+	}
+
+	for(var f in orderedFilters) {
+		var filter_result = f.filter(node_target, chat_line, text, badges);
+		if(filter_result === DELETE_TRUE || filter_result === DELETE_FALSE) {
+			return filter_result;
+		}
+	}
+
+	//By this point, all filters have run and none have told us to delete the
+	// message, so we just keep it:
+	return false;
+
+
+
+	////////////////////////////////////////
+
 	if(!text) return false;
 
 	// this is a special jquery selection set
