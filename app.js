@@ -22,18 +22,28 @@ var SUBSCRIBER = "Subscriber",
 	STAFF = "Staff";
 
 var POWER = [MODERATOR, BROADCASTER, GLOBALMODERATOR, ADMIN, STAFF];
+
 var DELETE_TRUE = 1;
 var DELETE_FALSE = -1;
 var DELETE_UNSURE = 0;
 
 var OPTIONS = {
-	staffMessagePriority: true,
-	notificationPriority: true,
-	lengthRestrict: true,
-	byAccountStatus: true,
-	triggerPhrase: true,
+	staffMessagePriority: false,
+	notificationPriority: false,
+	lengthRestrict: false,
+	byAccountStatus: false,
+	triggerPhrase: false,
 	copyPasta: true
+}
 
+var PARAMS = {
+	tooLong_threshold: 100,
+	triggerPhrase_requireDelimited: true,
+	triggerPhrase_phrases: [],
+	byAccountStatus_hidePlebs: true,
+	byAccountStatus_hideSubs: true,
+	copyPasta_lengthThreshold: 100,
+	copyPasta_expiration: 1000 * 60 * 1 // 1 minute
 }
 
 var ALL_POSSIBLE_FILTERS = {
@@ -81,53 +91,6 @@ function sortFilters(f1, f2) {
 }
 orderedFilters.sort(sortFilters);
 
-// this is a special jquery selection set
-var node_arr_badge = node_badges.children(".badge");
-var badges = [];
-for(var i = 0; i < node_arr_badge.length; i++) {
-	badges.push($(node_arr_badge[i]).attr("title"));
-}
-
-
-text = text.toLowerCase();
-
-// if it's a notification, never delete it:
-if(notification_p(node_target)) {
-	return false;
-}
-
-// overrides all rules so let's put it first:
-staffPriority = true;
-if(staffPriority && byStaff(badges)) {
-	return false;
-}
-
-// if any of these are satisfied, we delete. 
-
-// Order least to most expensive in computation.
-lengthRestrict = false;
-if(lengthRestrict && isTooLong(text)) {
-	return true;
-}
-// they have the option to hide messages from plebs or from
-//  subs (if the subs have no other authorizations)
-byAccountStatus = false;
-if(byAccountStatus && wrongAccountType(badges)) {
-	return true;
-}
-trigger = true;
-if(trigger && hasTriggerPhrase(stripEmotes(text))) {
-	return true;
-}
-copyPasta = true;
-if(copyPasta && isCopyPasta(reduceEmotes(text))) {
-	return true;
-}
-
-return false;
-
-
-
 $(".chat-lines").bind("DOMNodeInserted", function(e) {
 	var node_target = $(e.target);
 	if(node_target.is(".ember-view")) {
@@ -156,15 +119,21 @@ function handle_deleteMessage(node_target) {
 
 function shouldBeDeleted(node_target) {
 	var chat_line = node_target.children(".chat-line");
-	var text = chat_line.children(".message").html();
-	var badges = chat_line.children(".badges");
+	var text = chat_line.children(".message").html().toLowerCase(); // could give undefined error if msg is deleted
+	var node_badges = chat_line.children(".badges").children(".badge");
+	var badges = [];
+
+	// this is a special jquery selection set so can't use <for ... in ...>
+	for(var i = 0; i < node_badges.length; i++) {
+		badges.push($(node_badges[i]).attr("title"));
+	}
 
 	if(!text) {
 		return false;
 	}
 
-	for(var f in orderedFilters) {
-		var filter_result = f.filter(node_target, chat_line, text, badges);
+	for(var i = 0; i < orderedFilters.length; i++) {
+		var filter_result = orderedFilters[i].filter(node_target, chat_line, text, badges);
 		if(filter_result === DELETE_TRUE || filter_result === DELETE_FALSE) {
 			return filter_result;
 		}
@@ -173,136 +142,87 @@ function shouldBeDeleted(node_target) {
 	//By this point, all filters have run and none have told us to delete the
 	// message, so we just keep it:
 	return false;
-
-
-
-	////////////////////////////////////////
-
-	if(!text) return false;
-
-	// this is a special jquery selection set
-	var node_arr_badge = node_badges.children(".badge");
-	var badges = [];
-	for(var i = 0; i < node_arr_badge.length; i++) {
-		badges.push($(node_arr_badge[i]).attr("title"));
-	}
-	
-
-	text = text.toLowerCase();
-
-	// if it's a notification, never delete it:
-	if(notification_p(node_target)) {
-		return false;
-	}
-
-	// overrides all rules so let's put it first:
-	staffPriority = true;
-	if(staffPriority && byStaff(badges)) {
-		return false;
-	}
-
-	// if any of these are satisfied, we delete. 
-
-	// Order least to most expensive in computation.
-	lengthRestrict = false;
-	if(lengthRestrict && isTooLong(text)) {
-		return true;
-	}
-	// they have the option to hide messages from plebs or from
-	//  subs (if the subs have no other authorizations)
-	byAccountStatus = false;
-	if(byAccountStatus && wrongAccountType(badges)) {
-		return true;
-	}
-	trigger = true;
-	if(trigger && hasTriggerPhrase(stripEmotes(text))) {
-		return true;
-	}
-	copyPasta = true;
-	if(copyPasta && isCopyPasta(reduceEmotes(text))) {
-		return true;
-	}
-
-	return false;
 }
 
-function notification_p(target) {
-	return target.hasClass("notification");
+function filter_notification(node_target, chat_line, text, badges) {
+	if(chat_line.hasClass("admin")) {
+		return DELETE_FALSE;
+	}
+
+	return DELETE_UNSURE;
 }
 
-// yeah yeah yeah, I know HTML isn't regular
-var emote_regex_str = "< *img *class=\\\".*\\\" *src=\\\".*\\\" *alt=\\\".*\\\" *title=\\\".*\\\" *>";
-function reduceEmotes(text) {
-	var emote = new RegExp(emote_regex_str, "gi");
-	return text.replace(emote, "E");
+function reduceEmotes(chat_line) {
+	var imgs = chat_line.children(".message").children("img");
+	for(var i = 0; i < imgs.length; i++) {
+		$(imgs[i]).replaceWith($(imgs[i]).attr("alt"));
+	}
 }
 
-function stripEmotes(text) {
-	var emote = new RegExp(emote_regex_str, "gi");
-	return text.replace(emote, "");
+function stripEmotes(chat_line) {
+	var imgs = chat_line.children(".message").children("img");
+	for(var i = 0; i < imgs.length; i++) {
+		$(imgs[i]).replaceWith("");
+	}
 }
 
-function hasEmotes(text) {
-	var emote = new RegExp(emote_regex_str, "gi");
-	return emote.test(text);
+function hasEmotes(chat_line) {
+	return chat_line.children(".message").children("img").length > 0;
 }
 
-function byStaff(badges) {
-	var staffTypes = [];
-
-	// the poster can have multiple badges. Need to satisfy at least 1.
+function filter_byStaff(node_target, chat_line, text, badges) {
+	// The poster can have multiple badges. If any of the poster's badges are a staff
+	//  badge, we don't delete.
 	for(var i = 0; i < badges.length; i++) {
-		if(staffTypes.indexOf(badges[i]) > -1) return true;
+		if(POWER.indexOf(badges[i]) > -1) return DELETE_FALSE;
 	}
-	return false;
+
+	// If we get here then the poster does not have a staff badge.
+	return DELETE_UNSURE;
 }
 
-hideMessagesFromPlebs = true;
-hideMessagesFromSubs = true; // can contain either/both/neither of sub, pleb
-// ignores turbo status
-
-// if badges = [] or badges = ["Subscriber"]
 //TODO turbo?
-function wrongAccountType(badges) {
-	if(hideMessagesFromPlebs) {
-		if(badges.length === 0) return true;
+function filter_byAccountStatus(node_target, chat_line, text, badges) {
+	if(PARAMS.byAccountStatus_hidePlebs) {
+		if(badges.length === 0) {
+			return DELETE_TRUE;
+		}
 	}
-	if(hideMessagesFromSubs) {
+
+	// for now, hides anyone who contains a sub badge (including mods etc)
+	if(PARAMS.byAccountStatus_hideSubs) {
 		if(badges.indexOf(SUBSCRIBER) > -1) {
-			for(var i = 0; i < POWER.length; i++) {
-				if(badges.indexOf(POWER[i]) > -1) {
-					return false;
-				}
-			}
-			return true;
-		} else {
-			return false;
-		}
+			return DELETE_TRUE;
+		} 
 	}
 
-	return false;
-}
-var tooLong_threshold = 100;
-function isTooLong(text) {
-	if(text.length > tooLong_threshold) return true;
-	return false;
+	return DELETE_UNSURE;
 }
 
-var triggerPhrases = [];
-var trigger_requireDelimited = false;
-function hasTriggerPhrase(text) {
-	for(var i = 0; i < triggerPhrases.length; i++) {
-		if(trigger_requireDelimited) {
-			if(text.indexOf(triggerPhrases[i]) > -1) return true;
+function filter_lengthRestrict(node_target, chat_line, text, badges) {
+	if(text.length > PARAMS.tooLong_threshold) {
+		return DELETE_TRUE;
+	}
+
+	return DELETE_UNSURE;
+}
+
+function filter_triggerPhrase(node_target, chat_line, text, badges) {
+	for(var phrase in PARAMS.triggerPhrase_phrases) {
+		if(PARAMS.triggerPhrase_requireDelimited) {
+			if(text.indexOf(phrase) > -1) {
+				return DELETE_TRUE;
+			}
 		} else {
-			var w = triggerPhrases[i];
 			// does not work correctly with accented/special chars/letters
-			var regex = new RegExp("\\b" + w + "\\b");
-			if(regex.test(text)) return true;
+			var regex = new RegExp("\\b" + phrase + "\\b");
+			if(regex.test(text)) {
+				return DELETE_TRUE;
+			}
 		}
-	} 
+	}
 	
-	return false;
+	return DELETE_UNSURE;
 }
 
 longMessages = [];
@@ -310,21 +230,22 @@ longMessages = [];
 each longMessage ele is of the form
 {text: String, lastAccess: Time, numOccurrences: Number}
 */
-var cpLengthThreshold = 100;
-function isCopyPasta(text) {
+
+function filter_copyPasta(node_target, chat_line, text, badges) {
+	var text = 
 	// copyPasta only applies to long copyPasta messages
-	if(text.length > cpLengthThreshold) {
+	if(text.length > PARAMS.copyPasta_lengthThreshold) {
 		var logged = isAlreadyLogged(text);
 		if(logged) { // then it's already there so it's a copy paste
 			console.log("Is logged.");
-			return true;
+			return DELETE_TRUE;
 		} else { // then add to listing and return false
 			addCPListing(text);
-			return false;
+			return DELETE_UNSURE;
 		}
-	} else {
-		return false;
 	}
+
+	return DELETE_UNSURE;
 }
 
 function addCPListing(text) {
@@ -339,17 +260,13 @@ function addCPListing(text) {
 	return newCPListing;
 }
 
-CP_expiration = 1000 * 60 * 1; // 1 minute
-// CP_expiration = 1000 * 10; // 10 sec for now 
 function isAlreadyLogged(text) {
-
-
 	var numLongMessages = longMessages.length;
 
 	// mmm hacky for-loops
 	for(var i = 0; i < longMessages.length; ) {
 		var msg = longMessages[i];
-		if(new Date() - msg.lastAccess > CP_expiration) {
+		if(new Date() - msg.lastAccess > PARAMS.copyPasta_expiration) {
 			longMessages.splice(i, 1);
 			// don't modify i since we removed the current element from
 			//  the array, so we're already at the "next" i
@@ -376,14 +293,10 @@ function isAlreadyLogged(text) {
 
 // Copy pasta distance
 function CP_distance(key, text) {
-	return text_distance(key, text);
+	return DL_distance(key, text);
 }
 
-function text_distance(t1, t2) {
-	return DL_distance(t1, t2);
-}
-
-// D-Levenshtein Distance
+// Damerau-Levenshtein Distance
 function DL_distance(a, b) {
 	var lenA = a.length;
 	var lenB = b.length;
