@@ -26,23 +26,32 @@ var POWER = [MODERATOR, BROADCASTER, GLOBALMODERATOR, ADMIN, STAFF];
 var DELETE_TRUE = 1;
 var DELETE_FALSE = -1;
 var DELETE_UNSURE = 0;
+var deletion_reason = {};
 
 var OPTIONS = {
-	staffMessagePriority: false,
-	notificationPriority: false,
+	staffMessagePriority: true,
+	notificationPriority: true,
 	lengthRestrict: false,
 	byAccountStatus: false,
 	triggerPhrase: false,
 	copyPasta: true
 }
 
+var REASON = {
+	HIDE_PLEBS: "Hide plebs",
+	HIDE_SUBS: "Hide subs",
+	LENGTH_RESTRICT: "Length restriction",
+	TRIGGER_PHRASE: "Trigger phrase",
+	COPY_PASTA: "Copy pasta"
+}
+
 var PARAMS = {
-	tooLong_threshold: 100,
+	tooLong_threshold: 50,
 	triggerPhrase_requireDelimited: true,
 	triggerPhrase_phrases: [],
 	byAccountStatus_hidePlebs: true,
 	byAccountStatus_hideSubs: true,
-	copyPasta_lengthThreshold: 100,
+	copyPasta_lengthThreshold: 10,
 	copyPasta_expiration: 1000 * 60 * 1 // 1 minute
 }
 
@@ -98,17 +107,22 @@ $(".chat-lines").bind("DOMNodeInserted", function(e) {
 		// var text = chat_line.children(".message").html();
 		// var badges = chat_line.children(".badges");
 
-		if(shouldBeDeleted(node_target)) {
-			handle_deleteMessage(node_target);
-		}
-		// handle_deleteMessage(node_target);
-		
+		handle(node_target);	
 	}
 });
 
+function handle(node_target) {
+	if(shouldDelete(node_target)) {
+		deleteMessage(node_target);
+	}
+}
+
 showDeletedMsgMarker = false;
-function handle_deleteMessage(node_target) {
+function deleteMessage(node_target) {
 	node_target.css("background-color", "red");
+	console.log(deletion_reason);
+	node_target.children(".chat-line").children(".message").append("</br>Deletion reason: " + deletion_reason[$(node_target).attr("id")]);
+	delete deletion_reason[$(node_target).attr("id")];
 
 	if(showDeletedMsgMarker) {
 		$(".chat-lines").append("</hr style=\"{color: red}\">");
@@ -117,7 +131,9 @@ function handle_deleteMessage(node_target) {
 	}
 }
 
-function shouldBeDeleted(node_target) {
+// TODO deal with URLs/links in chat messages
+// TODO emotes should count as 1 character for lengthRestrict
+function shouldDelete(node_target) {
 	var chat_line = node_target.children(".chat-line");
 	var text = chat_line.children(".message").html().toLowerCase(); // could give undefined error if msg is deleted
 	var node_badges = chat_line.children(".badges").children(".badge");
@@ -134,8 +150,10 @@ function shouldBeDeleted(node_target) {
 
 	for(var i = 0; i < orderedFilters.length; i++) {
 		var filter_result = orderedFilters[i].filter(node_target, chat_line, text, badges);
-		if(filter_result === DELETE_TRUE || filter_result === DELETE_FALSE) {
-			return filter_result;
+		if(filter_result === DELETE_TRUE) {
+			return true;
+		} else if(filter_result === DELETE_FALSE) {
+			return false;
 		}
 	}
 
@@ -152,10 +170,13 @@ function filter_notification(node_target, chat_line, text, badges) {
 	return DELETE_UNSURE;
 }
 
-function reduceEmotes(chat_line) {
-	var imgs = chat_line.children(".message").children("img");
+function reduceEmotes(message, toAlt, replacement) {
+	var imgs = message.children("img");
+	var r = replacement;
+
 	for(var i = 0; i < imgs.length; i++) {
-		$(imgs[i]).replaceWith($(imgs[i]).attr("alt"));
+		if(toAlt === true) r = $(imgs[i]).attr("alt");
+		$(imgs[i]).replaceWith(r);
 	}
 }
 
@@ -174,7 +195,9 @@ function filter_byStaff(node_target, chat_line, text, badges) {
 	// The poster can have multiple badges. If any of the poster's badges are a staff
 	//  badge, we don't delete.
 	for(var i = 0; i < badges.length; i++) {
-		if(POWER.indexOf(badges[i]) > -1) return DELETE_FALSE;
+		if(POWER.indexOf(badges[i]) > -1) {
+			return DELETE_FALSE;
+		}
 	}
 
 	// If we get here then the poster does not have a staff badge.
@@ -185,6 +208,7 @@ function filter_byStaff(node_target, chat_line, text, badges) {
 function filter_byAccountStatus(node_target, chat_line, text, badges) {
 	if(PARAMS.byAccountStatus_hidePlebs) {
 		if(badges.length === 0) {
+			deletion_reason[$(node_target).attr("id")] = REASON.HIDE_PLEBS;
 			return DELETE_TRUE;
 		}
 	}
@@ -192,6 +216,7 @@ function filter_byAccountStatus(node_target, chat_line, text, badges) {
 	// for now, hides anyone who contains a sub badge (including mods etc)
 	if(PARAMS.byAccountStatus_hideSubs) {
 		if(badges.indexOf(SUBSCRIBER) > -1) {
+			deletion_reason[$(node_target).attr("id")] = REASON.HIDE_SUBS;
 			return DELETE_TRUE;
 		} 
 	}
@@ -200,7 +225,13 @@ function filter_byAccountStatus(node_target, chat_line, text, badges) {
 }
 
 function filter_lengthRestrict(node_target, chat_line, text, badges) {
+	var clone_message = chat_line.children(".message").clone();
+	reduceEmotes(clone_message, false, " ");
+
+	var text = $(clone_message).html().toLowerCase();
 	if(text.length > PARAMS.tooLong_threshold) {
+		deletion_reason[$(node_target).attr("id")] = REASON.LENGTH_RESTRICT;
+		console.log(deletion_reason);
 		return DELETE_TRUE;
 	}
 
@@ -211,12 +242,14 @@ function filter_triggerPhrase(node_target, chat_line, text, badges) {
 	for(var phrase in PARAMS.triggerPhrase_phrases) {
 		if(PARAMS.triggerPhrase_requireDelimited) {
 			if(text.indexOf(phrase) > -1) {
+				deletion_reason[$(node_target).attr("id")] = REASON.TRIGGER_PHRASE;
 				return DELETE_TRUE;
 			}
 		} else {
 			// does not work correctly with accented/special chars/letters
 			var regex = new RegExp("\\b" + phrase + "\\b");
 			if(regex.test(text)) {
+				deletion_reason[$(node_target).attr("id")] = REASON.TRIGGER_PHRASE;
 				return DELETE_TRUE;
 			}
 		}
@@ -232,12 +265,20 @@ each longMessage ele is of the form
 */
 
 function filter_copyPasta(node_target, chat_line, text, badges) {
-	var text = 
-	// copyPasta only applies to long copyPasta messages
+	// Replace emotes with their alt texts first before doing copyPasta comparison
+	var clone_message = chat_line.children(".message").clone();
+	reduceEmotes(clone_message, true);
+
+	var text = $(clone_message).html().toLowerCase();
+	console.log("copyPasta check text: ");
+	console.log(text);
+	// copyPasta only applies to long messages
 	if(text.length > PARAMS.copyPasta_lengthThreshold) {
 		var logged = isAlreadyLogged(text);
 		if(logged) { // then it's already there so it's a copy paste
 			console.log("Is logged.");
+			deletion_reason[$(node_target).attr("id")] = REASON.COPY_PASTA;
+			console.log(deletion_reason);
 			return DELETE_TRUE;
 		} else { // then add to listing and return false
 			addCPListing(text);
