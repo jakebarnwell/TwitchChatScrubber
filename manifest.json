@@ -19,6 +19,9 @@
 			"css": ["style.css"],
 			"js": [
 				"jquery-2.1.3.js",
+				"copyPasta.js",
+				"deletionFilters.js",
+				"utils.js",
 				"app.js"
 			],
 			"run_at": "document_end"
