@@ -21,6 +21,30 @@ function hasEmotes(chat_line) {
 }
 
 
+function calculateFilters() {
+	var unorderedFilters = [];
+
+	// Sorts filters based on given priority
+	var sortFilters = function(f1, f2) {
+		return f1.filter - f2.filter;
+	}
+
+	// Adds the appropriate filters into our active filter buffer
+	for (var key in OPTION) {
+	   	if (OPTION.hasOwnProperty(key)) {
+	   		if(OPTION[key] === true) {
+	   			unorderedFilters.push(ALL_POSSIBLE_FILTERS[key]);
+	   		}
+	    }
+	}
+
+	// Order the filters
+	var orderedFilters = unorderedFilters.slice()
+	orderedFilters.sort(sortFilters);
+
+	return orderedFilters;
+}
+
 
 
 // Damerau-Levenshtein Distance

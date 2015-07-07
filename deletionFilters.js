@@ -91,14 +91,14 @@ function filter_copyPasta(node_target, chat_line, text, badges) {
 	console.log(text);
 	// copyPasta only applies to long messages
 	if(text.length > PARAM.copyPasta.lengthThreshold) {
-		var logged = isAlreadyLogged(text);
+		var logged = CP.alreadyLogged(text);
 		if(logged) { // then it's already there so it's a copy paste
 			console.log("Is logged.");
 			deletion_reason[$(node_target).attr("id")] = REASON.COPY_PASTA;
 			console.log(deletion_reason);
 			return DELETE_TRUE;
 		} else { // then add to listing and return false
-			addCPListing(text);
+			CP.addListing(text);
 			return DELETE_UNSURE;
 		}
 	}

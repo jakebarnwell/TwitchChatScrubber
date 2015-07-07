@@ -26,118 +26,12 @@ $(document).ready(function() {
 	});
 });
 
-var SUBSCRIBER = "Subscriber",
-	TURBO = "Turbo",
-	MODERATOR = "Moderator",
-	BROADCASTER = "Broadcaster",
-	GLOBALMODERATOR = "Global Moderator",
-	ADMIN = "Admin",
-	STAFF = "Staff";
-
-var POWER = [MODERATOR, BROADCASTER, GLOBALMODERATOR, ADMIN, STAFF];
-
-var DELETE_TRUE = 1;
-var DELETE_FALSE = -1;
-var DELETE_UNSURE = 0;
-var deletion_reason = {};
-
-var OPTION = {
-	staffMessagePriority: true,
-	notificationPriority: true,
-	lengthRestrict: true,
-	byAccountStatus: false,
-	triggerPhrase: false,
-	copyPasta: true
-}
-
-var REASON = {
-	HIDE_PLEBS: "Hide plebs",
-	HIDE_SUBS: "Hide subs",
-	LENGTH_RESTRICT: "Length restriction",
-	TRIGGER_PHRASE: "Trigger phrase",
-	COPY_PASTA: "Copy pasta"
-}
-
-var PARAM = {
-	lengthRestrict: {
-		threshold: 10
-	},
-	triggerPhrase: {
-		delimited: true,
-		phrases: []
-	},
-	byAccountStatus: {
-		hidePlebs: true,
-		hideSubs: true
-	},
-	copyPasta: {
-		lengthThreshold: 10,
-		expiration: 1000 * 60 * 1 // 1 minute
-	}
-}
-
-var ALL_POSSIBLE_FILTERS = {
-	staffMessagePriority: {
-		filter: filter_byStaff,
-		priority: 1
-	},
-	notificationPriority: {
-		filter: filter_notification,
-		priority: 2
-	},
-	lengthRestrict: {
-		filter: filter_lengthRestrict,
-		priority: 4
-	},
-	byAccountStatus: {
-		filter: filter_byAccountStatus,
-		priority: 3
-	},
-	triggerPhrase: {
-		filter: filter_triggerPhrase,
-		priority: 5
-	},
-	copyPasta: {
-		filter: filter_copyPasta,
-		priority: 6
-	}
-}
-
-var FILTERS = [];
-
-function calculateFilters() {
-	var unorderedFilters = [];
-
-	// Sorts filters based on given priority
-	var sortFilters = function(f1, f2) {
-		return f1.filter - f2.filter;
-	}
-
-	// Adds the appropriate filters into our active filter buffer
-	for (var key in OPTION) {
-	   	if (OPTION.hasOwnProperty(key)) {
-	   		if(OPTION[key] === true) {
-	   			unorderedFilters.push(ALL_POSSIBLE_FILTERS[key]);
-	   		}
-	    }
-	}
-
-	// Order the filters
-	var orderedFilters = unorderedFilters.slice()
-	orderedFilters.sort(sortFilters);
-
-	return orderedFilters;
-}
-
 function TwitchChatScrubber() {
 	FILTERS = calculateFilters();
 	$(".chat-lines").delegate("div", "DOMNodeInserted", function(e) {
 		var node_target = $(e.target);
-		if(node_target.is(".ember-view")) {
-			// var chat_line = node_target.children(".chat-line");
-			// var text = chat_line.children(".message").html();
-			// var badges = chat_line.children(".badges");
 
+		if(node_target.is(".ember-view")) {
 			handle(node_target);	
 		}
 	});
@@ -146,20 +40,6 @@ function TwitchChatScrubber() {
 function handle(node_target) {
 	if(shouldDelete(node_target)) {
 		deleteMessage(node_target);
-	}
-}
-
-showDeletedMsgMarker = false;
-function deleteMessage(node_target) {
-	node_target.css("background-color", "red");
-	console.log(deletion_reason);
-	node_target.children(".chat-line").children(".message").append("</br>Deletion reason: " + deletion_reason[$(node_target).attr("id")]);
-	delete deletion_reason[$(node_target).attr("id")];
-
-	if(showDeletedMsgMarker) {
-		$(".chat-lines").append("</hr style=\"{color: red}\">");
-	} else {
-		;
 	}
 }
 
@@ -194,5 +74,15 @@ function shouldDelete(node_target) {
 	return false;
 }
 
+function deleteMessage(node_target) {
+	node_target.css("background-color", "red");
+	console.log(deletion_reason);
+	node_target.children(".chat-line").children(".message").append("</br>Deletion reason: " + deletion_reason[$(node_target).attr("id")]);
+	delete deletion_reason[$(node_target).attr("id")];
 
-
+	if(OPTION.deletedMessage.showMarker) {
+		$(".chat-lines").append("</hr style=\"{color: red}\">");
+	} else {
+		;
+	}
+}
