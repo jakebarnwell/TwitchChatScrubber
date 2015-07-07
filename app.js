@@ -13,6 +13,37 @@ dont apply deletion when by a mod (since could be a bot) or broadcaster (since a
 my copyPasta code slowing everything way down after awhile
 */
 
+/*
+delete all-caps or most-caps messages
+caps --> proper case
+special CSS for @username
+slow down chat---only show every n-th chat message? or msg/sec or something
+*/
+
+// console.log("Here!");
+// alert("Here");
+$(document).ready(function() {
+	console.log("Ready document.");
+	// $(".chat-lines").delegate("ul", "load", function() {
+	// 	console.log("Chat lines ready!");
+	// });
+	// setTimeout(function() {$(".chat-lines").hide();}, 10000);
+	// console.log($(".chat-lines").children(".chat-line"));
+	$(".chat-lines").ready(function() {
+		console.log("Chat is ready!");
+		// setTimeout(stuff, 10000);
+		stuff();
+	});
+});
+function stuff() {
+	$(".chat-lines").delegate("div", "DOMNodeInserted", function(e) {
+		var node_target = $(e.target);
+		console.log($(node_target).children(".chat-line").children(".message").html());
+	});
+}
+
+
+
 var SUBSCRIBER = "Subscriber",
 	TURBO = "Turbo",
 	MODERATOR = "Moderator",
@@ -31,7 +62,7 @@ var deletion_reason = {};
 var OPTIONS = {
 	staffMessagePriority: true,
 	notificationPriority: true,
-	lengthRestrict: false,
+	lengthRestrict: true,
 	byAccountStatus: false,
 	triggerPhrase: false,
 	copyPasta: true
