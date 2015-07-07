@@ -18,7 +18,7 @@ function isAlreadyLogged(text) {
 	// mmm hacky for-loops
 	for(var i = 0; i < longMessages.length; ) {
 		var msg = longMessages[i];
-		if(new Date() - msg.lastAccess > PARAMS.copyPasta_expiration) {
+		if(new Date() - msg.lastAccess > PARAM.copyPasta.expiration) {
 			longMessages.splice(i, 1);
 			// don't modify i since we removed the current element from
 			//  the array, so we're already at the "next" i

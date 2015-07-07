@@ -41,7 +41,7 @@ var DELETE_FALSE = -1;
 var DELETE_UNSURE = 0;
 var deletion_reason = {};
 
-var OPTIONS = {
+var OPTION = {
 	staffMessagePriority: true,
 	notificationPriority: true,
 	lengthRestrict: true,
@@ -58,14 +58,22 @@ var REASON = {
 	COPY_PASTA: "Copy pasta"
 }
 
-var PARAMS = {
-	tooLong_threshold: 10,
-	triggerPhrase_requireDelimited: true,
-	triggerPhrase_phrases: [],
-	byAccountStatus_hidePlebs: true,
-	byAccountStatus_hideSubs: true,
-	copyPasta_lengthThreshold: 10,
-	copyPasta_expiration: 1000 * 60 * 1 // 1 minute
+var PARAM = {
+	lengthRestrict: {
+		threshold: 10
+	},
+	triggerPhrase: {
+		delimited: true,
+		phrases: []
+	},
+	byAccountStatus: {
+		hidePlebs: true,
+		hideSubs: true
+	},
+	copyPasta: {
+		lengthThreshold: 10,
+		expiration: 1000 * 60 * 1 // 1 minute
+	}
 }
 
 var ALL_POSSIBLE_FILTERS = {
@@ -93,27 +101,36 @@ var ALL_POSSIBLE_FILTERS = {
 		filter: filter_copyPasta,
 		priority: 6
 	}
-
 }
 
-var unorderedFilters = [];
+var FILTERS = [];
 
-// Adds the appropriate filters into our active filter buffer
-for (var key in OPTIONS) {
-   	if (OPTIONS.hasOwnProperty(key)) {
-   		if(OPTIONS[key] === true) {
-   			unorderedFilters.push(ALL_POSSIBLE_FILTERS[key]);
-   		}
-    }
-}
+function calculateFilters() {
+	var unorderedFilters = [];
 
-var orderedFilters = unorderedFilters.slice()
-function sortFilters(f1, f2) {
-	return f1.filter - f2.filter;
+	// Sorts filters based on given priority
+	var sortFilters = function(f1, f2) {
+		return f1.filter - f2.filter;
+	}
+
+	// Adds the appropriate filters into our active filter buffer
+	for (var key in OPTION) {
+	   	if (OPTION.hasOwnProperty(key)) {
+	   		if(OPTION[key] === true) {
+	   			unorderedFilters.push(ALL_POSSIBLE_FILTERS[key]);
+	   		}
+	    }
+	}
+
+	// Order the filters
+	var orderedFilters = unorderedFilters.slice()
+	orderedFilters.sort(sortFilters);
+
+	return orderedFilters;
 }
-orderedFilters.sort(sortFilters);
 
 function TwitchChatScrubber() {
+	FILTERS = calculateFilters();
 	$(".chat-lines").delegate("div", "DOMNodeInserted", function(e) {
 		var node_target = $(e.target);
 		if(node_target.is(".ember-view")) {
@@ -163,8 +180,8 @@ function shouldDelete(node_target) {
 		return false;
 	}
 
-	for(var i = 0; i < orderedFilters.length; i++) {
-		var filter_result = orderedFilters[i].filter(node_target, chat_line, text, badges);
+	for(var i = 0; i < FILTERS.length; i++) {
+		var filter_result = FILTERS[i].filter(node_target, chat_line, text, badges);
 		if(filter_result === DELETE_TRUE) {
 			return true;
 		} else if(filter_result === DELETE_FALSE) {

@@ -22,7 +22,7 @@ function filter_byStaff(node_target, chat_line, text, badges) {
 
 //TODO turbo?
 function filter_byAccountStatus(node_target, chat_line, text, badges) {
-	if(PARAMS.byAccountStatus_hidePlebs) {
+	if(PARAM.byAccountStatus.hidePlebs) {
 		if(badges.length === 0) {
 			deletion_reason[$(node_target).attr("id")] = REASON.HIDE_PLEBS;
 			return DELETE_TRUE;
@@ -30,7 +30,7 @@ function filter_byAccountStatus(node_target, chat_line, text, badges) {
 	}
 
 	// for now, hides anyone who contains a sub badge (including mods etc)
-	if(PARAMS.byAccountStatus_hideSubs) {
+	if(PARAM.byAccountStatus.hideSubs) {
 		if(badges.indexOf(SUBSCRIBER) > -1) {
 			deletion_reason[$(node_target).attr("id")] = REASON.HIDE_SUBS;
 			return DELETE_TRUE;
@@ -45,7 +45,7 @@ function filter_lengthRestrict(node_target, chat_line, text, badges) {
 	reduceEmotes(clone_message, false, " ");
 
 	var text = $(clone_message).html().toLowerCase();
-	if(text.length > PARAMS.tooLong_threshold) {
+	if(text.length > PARAM.lengthRestrict.threshold) {
 		deletion_reason[$(node_target).attr("id")] = REASON.LENGTH_RESTRICT;
 		console.log(deletion_reason);
 		return DELETE_TRUE;
@@ -55,8 +55,8 @@ function filter_lengthRestrict(node_target, chat_line, text, badges) {
 }
 
 function filter_triggerPhrase(node_target, chat_line, text, badges) {
-	for(var phrase in PARAMS.triggerPhrase_phrases) {
-		if(PARAMS.triggerPhrase_requireDelimited) {
+	for(var phrase in PARAM.triggerPhrase.phrases) {
+		if(PARAM.triggerPhrase.delimited) {
 			if(text.indexOf(phrase) > -1) {
 				deletion_reason[$(node_target).attr("id")] = REASON.TRIGGER_PHRASE;
 				return DELETE_TRUE;
@@ -90,7 +90,7 @@ function filter_copyPasta(node_target, chat_line, text, badges) {
 	console.log("copyPasta check text: ");
 	console.log(text);
 	// copyPasta only applies to long messages
-	if(text.length > PARAMS.copyPasta_lengthThreshold) {
+	if(text.length > PARAM.copyPasta.lengthThreshold) {
 		var logged = isAlreadyLogged(text);
 		if(logged) { // then it's already there so it's a copy paste
 			console.log("Is logged.");
