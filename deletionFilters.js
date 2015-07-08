@@ -84,7 +84,10 @@ each longMessage ele is of the form
 function filter_copyPasta(node_target, chat_line, text, badges) {
 	// Replace emotes with their alt texts first before doing copyPasta comparison
 	var clone_message = chat_line.children(".message").clone();
+	console.log("Clone_message:");
+	console.log(clone_message);
 	reduceEmotes(clone_message, true);
+	reduceLinks(clone_message, true);
 
 	var text = $(clone_message).html().toLowerCase();
 	console.log("copyPasta check text: ");

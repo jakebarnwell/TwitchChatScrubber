@@ -1,17 +1,37 @@
 
+var CONSTS = {
+	LINKREMOVE: 1,
+	LINKPLAINTEXT: 2,
+	EMOTEPLAINTEXT: 2,
+	EMOTEREMOVE: 1
+}
 
 var OPTION = {
+	deletedMessage: {
+		showMarker: false
+	},
+
+	reduceLinks: CONSTS.LINKPLAINTEXT,
+	reduceEmotes: CONSTS.EMOTEREMOVE
+}
+
+var FILTER_OPTION = {
 	staffMessagePriority: true,
 	notificationPriority: true,
 	lengthRestrict: false,
 	byAccountStatus: false,
 	triggerPhrase: false,
 	copyPasta: true,
-
-	deletedMessage: {
-		showMarker: false
-	}
 }
+
+var MUTATE_OPTION = {
+	minimizeCaps: true,
+	directedMsg: true,
+	reduceEmotes: true,
+	reduceLinks: true
+}
+
+
 
 var PARAM = {
 	lengthRestrict: {
@@ -58,6 +78,25 @@ var ALL_POSSIBLE_FILTERS = {
 	}
 }
 
+var ALL_POSSIBLE_MUTATORS = {
+	reduceLinks: {
+		mutator: mutate_reduceLinks,
+		priotiy: 1
+	},
+	minimizeCaps: {
+		mutator: mutate_minimizeCaps,
+		priority: 2
+	},
+	directedMsg: {
+		mutator: mutate_directedMsg,
+		priority: 3
+	},
+	reduceEmotes: {
+		mutator: mutate_reduceEmotes,
+		priority: 4
+	}
+}
+
 var REASON = {
 	HIDE_PLEBS: "Hide plebs",
 	HIDE_SUBS: "Hide subs",
@@ -81,5 +120,6 @@ var DELETE_FALSE = -1;
 var DELETE_UNSURE = 0;
 
 var FILTERS = [];
+var MUTATORS = []
 
 var deletion_reason = {};

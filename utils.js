@@ -9,20 +9,27 @@ function reduceEmotes(message, toAlt, replacement) {
 	}
 }
 
-function stripEmotes(chat_line) {
-	var imgs = chat_line.children(".message").children("img");
-	for(var i = 0; i < imgs.length; i++) {
-		$(imgs[i]).replaceWith("");
-	}
-}
-
 function hasEmotes(chat_line) {
 	return chat_line.children(".message").children("img").length > 0;
 }
 
+function reduceLinks(message, toPlaintext, replacement) {
+	console.log(message);
+	var links = message.children("a");
+	var r = replacement;
+
+	for(var i = 0; i < links.length; i++) {
+		if(toPlaintext === true) r = $(links[i]).attr("href");
+		$(links[i]).replaceWith(r);
+	}
+}
+
+function hasLinks(chat_line) {
+	return chat_line.children(".message").children("a").length > 0;
+}
 
 function calculateFilters() {
-	var unorderedFilters = [];
+	var filters = [];
 
 	// Sorts filters based on given priority
 	var sortFilters = function(f1, f2) {
@@ -30,19 +37,41 @@ function calculateFilters() {
 	}
 
 	// Adds the appropriate filters into our active filter buffer
-	for (var key in OPTION) {
-	   	if (OPTION.hasOwnProperty(key)) {
-	   		if(OPTION[key] === true) {
-	   			unorderedFilters.push(ALL_POSSIBLE_FILTERS[key]);
+	for (var key in FILTER_OPTION) {
+	   	if (FILTER_OPTION.hasOwnProperty(key)) {
+	   		if(FILTER_OPTION[key] === true) {
+	   			filters.push(ALL_POSSIBLE_FILTERS[key]);
 	   		}
 	    }
 	}
 
 	// Order the filters
-	var orderedFilters = unorderedFilters.slice()
-	orderedFilters.sort(sortFilters);
+	filters.sort(sortFilters);
 
-	return orderedFilters;
+	return filters;
+}
+
+function calculateMutators() {
+	var mutators = [];
+
+	// Sorts mutators based on given priority
+	var sortMutators = function(m1, m2) {
+		return m1.mutator - m2.mutator;
+	}
+
+	// Adds the appropriate mutators into our active filter buffer
+	for (var key in MUTATE_OPTION) {
+	   	if (MUTATE_OPTION.hasOwnProperty(key)) {
+	   		if(MUTATE_OPTION[key] === true) {
+	   			mutators.push(ALL_POSSIBLE_MUTATORS[key]);
+	   		}
+	    }
+	}
+
+	// Order the filters
+	mutators.sort(sortMutators);
+
+	return mutators;
 }
 
 
