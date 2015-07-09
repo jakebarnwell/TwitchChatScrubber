@@ -23,6 +23,8 @@ function mutate_minimizeCaps(node_target) {
 }
 
 function mutate_directedMsg(node_target) {
+	console.log("Calling mutate directed msg on:" );
+	console.log(node_target);
 	var regexUsername = new RegExp("(^|\\W)@\\w+", "g");
 	var stylizeUsername = function(atUsername) {
 		var s;

@@ -73,6 +73,17 @@ function calculateMutators() {
 	return mutators;
 }
 
+function calculateDirectedMsgStyles() {
+	var styles = "";
+	for (var key in PARAM.directedMsg.style) {
+	   	if (PARAM.directedMsg.style.hasOwnProperty(key)) {
+	   		styles += key + ": " + PARAM.directedMsg.style[key].toString() + "; ";
+	    }
+	}
+
+	return styles;
+}
+
 
 
 // Damerau-Levenshtein Distance

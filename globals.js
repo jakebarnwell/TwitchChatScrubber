@@ -19,7 +19,7 @@ var OPTION = {
 var FILTER_OPTION = {
 	staffMessagePriority: true,
 	notificationPriority: true,
-	lengthRestrict: false,
+	lengthRestrict: true,
 	byAccountStatus: false,
 	triggerPhrase: false,
 	copyPasta: false,
@@ -55,7 +55,11 @@ var PARAM = {
 		percentThreshold: 0.8
 	},
 	directedMsg: {
-		style: "color: rgb(0, 32, 255); font-weight: 800"
+		style: {
+			"color": "rgb(0, 32, 255)",
+			"font-weight": 800
+		},
+		styles: ""
 	}
 }
 
