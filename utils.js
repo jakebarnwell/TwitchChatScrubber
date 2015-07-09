@@ -14,7 +14,6 @@ function hasEmotes(chat_line) {
 }
 
 function reduceLinks(message, toPlaintext, replacement) {
-	console.log(message);
 	var links = message.children("a");
 	var r = replacement;
 

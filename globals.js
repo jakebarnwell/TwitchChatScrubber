@@ -3,7 +3,8 @@ var CONSTS = {
 	LINKREMOVE: 1,
 	LINKPLAINTEXT: 2,
 	EMOTEPLAINTEXT: 2,
-	EMOTEREMOVE: 1
+	EMOTEREMOVE: 1,
+	DIRECTEDMSGCLASS: "directed-message"
 }
 
 var OPTION = {
@@ -12,7 +13,7 @@ var OPTION = {
 	},
 
 	reduceLinks: CONSTS.LINKPLAINTEXT,
-	reduceEmotes: CONSTS.EMOTEREMOVE
+	reduceEmotes: CONSTS.EMOTEREMOVE,
 }
 
 var FILTER_OPTION = {
@@ -21,14 +22,14 @@ var FILTER_OPTION = {
 	lengthRestrict: false,
 	byAccountStatus: false,
 	triggerPhrase: false,
-	copyPasta: true,
+	copyPasta: false,
 }
 
 var MUTATE_OPTION = {
-	minimizeCaps: true,
+	minimizeCaps: false,
 	directedMsg: true,
-	reduceEmotes: true,
-	reduceLinks: true
+	reduceEmotes: false,
+	reduceLinks: false
 }
 
 
@@ -48,6 +49,13 @@ var PARAM = {
 	copyPasta: {
 		lengthThreshold: 5,
 		expiration: 1000 * 60 * 1 // 1 minute
+	},
+	minimizeCaps: {
+		lengthThreshold: 5,
+		percentThreshold: 0.8
+	},
+	directedMsg: {
+		style: "color: rgb(0, 32, 255); font-weight: 800"
 	}
 }
 
