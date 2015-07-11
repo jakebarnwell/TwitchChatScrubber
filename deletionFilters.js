@@ -41,7 +41,7 @@ function filter_byAccountStatus(node_target, chat_line, text, badges) {
 }
 
 function filter_lengthRestrict(node_target, chat_line, text, badges) {
-	var clone_message = chat_line.children(".message").clone();
+	var clone_message = chatlineToMessage(chat_line).clone();
 	reduceEmotes(clone_message, false, " ");
 
 	var text = $(clone_message).html().toLowerCase();
@@ -83,7 +83,7 @@ each longMessage ele is of the form
 
 function filter_copyPasta(node_target, chat_line, text, badges) {
 	// Replace emotes with their alt texts first before doing copyPasta comparison
-	var clone_message = chat_line.children(".message").clone();
+	var clone_message = chatlineToMessage(chat_line).clone();
 	console.log("Clone_message:");
 	console.log(clone_message);
 	reduceEmotes(clone_message, true);
