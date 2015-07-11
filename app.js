@@ -23,7 +23,7 @@ delete theM?
 align usernames on the right so that chat messages are aligned?
 or hide usernames so they're not annoying, or truncate
 */
-
+// have a notifcation thing if you're @message'd. like a ding or a flash.
 $(document).ready(function() {
 	$(".chat-lines").ready(function() {
 		TwitchChatScrubber();
@@ -48,6 +48,7 @@ function handle(node_target) {
 	if(shouldDelete(node_target)) {
 		deleteMessage(node_target);
 	} else {
+		// console.log("Here.....");
 		maybeModifyMessage(node_target);
 	}
 }

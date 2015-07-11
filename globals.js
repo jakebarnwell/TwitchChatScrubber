@@ -19,7 +19,7 @@ var OPTION = {
 var FILTER_OPTION = {
 	staffMessagePriority: true,
 	notificationPriority: true,
-	lengthRestrict: true,
+	lengthRestrict: false,
 	byAccountStatus: false,
 	triggerPhrase: false,
 	copyPasta: false,
@@ -28,7 +28,7 @@ var FILTER_OPTION = {
 var MUTATE_OPTION = {
 	minimizeCaps: false,
 	directedMsg: true,
-	reduceEmotes: false,
+	reduceEmotes: true,
 	reduceLinks: false
 }
 
