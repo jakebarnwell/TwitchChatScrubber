@@ -24,6 +24,7 @@ align usernames on the right so that chat messages are aligned?
 or hide usernames so they're not annoying, or truncate
 */
 // have a notifcation thing if you're @message'd. like a ding or a flash.
+// change color of people's usernames (by class?)
 $(document).ready(function() {
 	$(".chat-lines").ready(function() {
 		TwitchChatScrubber();
@@ -36,7 +37,7 @@ function TwitchChatScrubber() {
 	PARAM.directedMsg.styles = calculateDirectedMsgStyles();
 	// console.log(PARAM.directedMsg.styles);
 	$(".chat-lines").delegate("div", "DOMNodeInserted", function(e) {
-		var node_target = $(e.target);
+		var node_target = targetToNode(e);
 
 		if(node_target.is(".ember-view")) {
 			handle(node_target);	
@@ -45,7 +46,13 @@ function TwitchChatScrubber() {
 }
 
 function handle(node_target) {
-	if(shouldDelete(node_target)) {
+	var chat_line = nodeToChatline(node_target);
+	var message = chatlineToMessage(chat_line);
+	var text = messageToText(message); // could give undefined error if msg is deleted
+	var textLower = text.toLowerCase();
+	var badges = chatlineToBadges(chat_line);
+
+	if(shouldDelete(node_target, chat_line, textLower, badges)) {
 		deleteMessage(node_target);
 	} else {
 		// console.log("Here.....");

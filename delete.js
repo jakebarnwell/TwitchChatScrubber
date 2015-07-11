@@ -1,15 +1,7 @@
-// TODO deal with URLs/links in chat messages
-// TODO emotes should count as 1 character for lengthRestrict
-function shouldDelete(node_target) {
-	var chat_line = node_target.children(".chat-line");
-	var text = chat_line.children(".message").html().toLowerCase(); // could give undefined error if msg is deleted
-	var node_badges = chat_line.children(".badges").children(".badge");
-	var badges = [];
 
-	// this is a special jquery selection set so can't use <for ... in ...>
-	for(var i = 0; i < node_badges.length; i++) {
-		badges.push($(node_badges[i]).attr("title"));
-	}
+// TODO emotes should count as 1 character for lengthRestrict
+function shouldDelete(node_target, chat_line, text, badges) {
+	// incoming text is all lowercase
 
 	if(!text) {
 		return false;

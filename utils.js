@@ -123,3 +123,36 @@ function DL_distance(a, b) {
 
 
 
+function targetToNode(e) {
+	return $(e.target);
+}
+
+function nodeToChatline(node) {
+	return node.children(".chat-line");
+}
+
+function chatlineToMessage(chatline) {
+	return chatline.children(".message");
+}
+
+function messageToText(message) {
+	return message.html();
+}
+
+function chatlineToNodebadges(chatline) {
+	return chatline.children(".badges").children(".badge");
+}
+
+function nodebadgesToTextbadges(nodebadges) {
+	var textbadges = [];
+	// this is a special jquery selection set so can't use <for ... in ...>
+	for(var i = 0; i < nodebadges.length; i++) {
+		textbadges.push($(nodebadges[i]).attr("title"));
+	}
+
+	return textbadges;
+}
+
+function chatlineToBadges(chatline) {
+	return nodebadgesToTextbadges(chatlineToNodebadges(chatline));
+}

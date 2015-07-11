@@ -53,7 +53,7 @@ function mutate_reduceEmotes(node_target) {
 	if(OPTION.reduceEmotes === CONSTS.EMOTEPLAINTEXT) {
 		reduceEmotes(message, true);
 	} else if(OPTION.reduceEmotes === CONSTS.EMOTEREMOVE) {
-		reduceEmotes(message, false, "");
+		reduceEmotes(message, false, "~EMOTE~");
 	} else {
 		throw new Error("Not a valid reduceEmotes option.");
 	}
