@@ -56,7 +56,7 @@ function handle(node_target) {
 		deleteMessage(node_target);
 	} else {
 		// console.log("Here.....");
-		maybeModifyMessage(node_target);
+		maybeModifyMessage(node_target, chat_line, message, text);
 	}
 }
 

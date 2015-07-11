@@ -1,7 +1,6 @@
 
 
-function mutate_reduceLinks(node_target) {
-	var message = node_target.children(".chat-line").children(".message");
+function mutate_reduceLinks(node_target, chat_line, message, text) {
 	if(OPTION.reduceLinks === CONSTS.LINKPLAINTEXT) {
 		reduceLinks(message, true);
 	} else if(OPTION.reduceLinks === CONSTS.LINKREMOVE) {
@@ -11,18 +10,17 @@ function mutate_reduceLinks(node_target) {
 	}
 }
 
-function mutate_minimizeCaps(node_target) {
-	var text = node_target.children(".chat-line").children(".message").html();
+function mutate_minimizeCaps(node_target, chat_line, message, text) {
 	var len = text.length;
 	if(len > PARAM.minimizeCaps.lengthThreshold) {
 		var numCaps = text.replace(/[^A-Z]/g, "").length;
 		if(1.0*numCaps/len > PARAM.minimizeCaps.percentThreshold) {
-			node_target.children(".chat-line").children(".message").css("text-transform","lowercase");
+			message.css("text-transform","lowercase");
 		}
 	}
 }
 
-function mutate_directedMsg(node_target) {
+function mutate_directedMsg(node_target, chat_line, message, text) {
 	// console.log("Calling mutate directed msg on:" );
 	// console.log(node_target);
 	var regexUsername = new RegExp("(^|\\W)@\\w+", "g");
@@ -41,15 +39,13 @@ function mutate_directedMsg(node_target) {
 		return firstChar + "<span style=\"" + PARAM.directedMsg.styles + "\" class=\"" + CONSTS.DIRECTEDMSGCLASS + "\">" + s + "</span>";
 	};
 	// console.log("Here.");
-	var text = node_target.children(".chat-line").children(".message").html();
 	var newText = text.replace(regexUsername, stylizeUsername);
 	// console.log("NewText: " + newText);
-	node_target.children(".chat-line").children(".message").html(newText);
+	message.html(newText);
 
 }
 
-function mutate_reduceEmotes(node_target) {
-	var message = node_target.children(".chat-line").children(".message");
+function mutate_reduceEmotes(node_target, chat_line, message, text) {
 	if(OPTION.reduceEmotes === CONSTS.EMOTEPLAINTEXT) {
 		reduceEmotes(message, true);
 	} else if(OPTION.reduceEmotes === CONSTS.EMOTEREMOVE) {
