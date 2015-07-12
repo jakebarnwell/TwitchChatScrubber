@@ -28,11 +28,11 @@ or hide usernames so they're not annoying, or truncate
 // hide "deleted messages" or refactor (the ones by Twitch itself)
 // option to show marker per delete-reason (probably not)
 $(document).ready(function() {
-	$(".chat-lines").ready(function() {
-	alert("chatlines is ready");
-
-		$(".real").html("CLASS-LINES IS READY.");
-		TwitchChatScrubber();
+	$(".chat-lines").waitUntilExists(function() {
+		$(".chat-lines").ready(function() {
+			console.log("Extension is ready!");
+			TwitchChatScrubber();
+		});
 	});
 });
 
@@ -40,8 +40,6 @@ function TwitchChatScrubber() {
 	FILTERS = calculateFilters();
 	MUTATORS = calculateMutators();
 	calculateDynamicStyles();
-	// console.log(PARAM.directedMsg.styles);
-	$(".channel-name").html($(".chat-lines").html());
 	$(".chat-lines").delegate("div", "DOMNodeInserted", function(e) {
 		var node_target = targetToNode(e);
 
@@ -61,8 +59,6 @@ function handle(node_target) {
 	if(shouldDelete(node_target, chat_line, textLower, badges)) {
 		deleteMessage(node_target);
 	} else {
-		// console.log("Here.....");
 		maybeModifyMessage(node_target, chat_line, message, text);
 	}
 }
-
