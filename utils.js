@@ -178,6 +178,7 @@ function applyNewStyles(node, message) {
 		console.log(message);
 		console.log("message.find(CLASS.DIRECTEDMSG):");
 		console.log(message.find("." + CLASS.DIRECTEDMSG));
+		// Use find() instead of children() since could be nested under other spans
 		$(message).find("." + CLASS.DIRECTEDMSG).css(STYLE.directedMsg.style);
 	}
 	if(node_classes.indexOf(CLASS.DIRECTEDMSG_SELF_NODE) > -1) {

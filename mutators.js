@@ -39,8 +39,8 @@ function mutate_directedMsg(node_target, chat_line, message, text) {
 		}
 		if(PARAM.directedMsg.notifyUser === true && s.slice(1) === CONSTS.CLIENTUSERNAME) {
 			exists = true;
-			node_target.addClass(CLASS.DIRECTEDMSG_SELF_NODE);
-			return firstChar + "<span class=\"" + CLASS.DIRECTEDMSG_SELF + "\">" + s + "</span>";
+			node_target.addClass(CLASS.DIRECTEDMSG_SELF_NODE).addClass(CLASS.DIRECTEDMSG_NODE);
+			return firstChar + "<span class=\"" + CLASS.DIRECTEDMSG_SELF + " " + CLASS.DIRECTEDMSG + "\">" + s + "</span>";
 		} else {
 			exists = true;
 			console.log("We're here, directed message (not self)");
