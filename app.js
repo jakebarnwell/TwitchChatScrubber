@@ -25,6 +25,8 @@ or hide usernames so they're not annoying, or truncate
 */
 // have a notifcation thing if you're @message'd. like a ding or a flash.
 // change color of people's usernames (by class?)
+// hide "deleted messages" or refactor (the ones by Twitch itself)
+// option to show marker per delete-reason (probably not)
 $(document).ready(function() {
 	$(".chat-lines").ready(function() {
 		TwitchChatScrubber();

@@ -26,7 +26,8 @@
 				"mutators.js",
 				"utils.js",
 				"globals.js",
-				"app.js"
+				"app.js",
+				"react.js"
 			],
 			"run_at": "document_end"
 		}

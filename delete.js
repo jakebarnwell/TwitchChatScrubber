@@ -22,14 +22,25 @@ function shouldDelete(node_target, chat_line, text, badges) {
 }
 
 function deleteMessage(node_target) {
-	node_target.css("background-color", "red");
-	console.log(deletion_reason);
-	node_target.children(".chat-line").children(".message").append("</br>Deletion reason: " + deletion_reason[$(node_target).attr("id")]);
-	delete deletion_reason[$(node_target).attr("id")];
+	// node_target.css("background-color", "red");
+	// console.log(deletion_reason);
+	// node_target.children(".chat-line").children(".message").append("</br>Deletion reason: " + deletion_reason[$(node_target).attr("id")]);
+	// delete deletion_reason[$(node_target).attr("id")];
 
-	if(OPTION.deletedMessage.showMarker) {
-		$(".chat-lines").append("</hr style=\"{color: red}\">");
+	// if(OPTION.deletedMessage.showMarker) {
+	// 	$(".chat-lines").append("</hr style=\"{color: red}\">");
+	// } else {
+	// 	;
+	// }
+	var chat_line = nodeToChatline(node_target);
+	if(OPTION.deletedMessage.showMarker === true) {
+		node_target.append("<div class=\"rehide-deleted-message\">(Click to re-hide)</div>");
+		node_target.children().hide();
+		node_target.append("<div class=\"deleted-message-placeholder\">Deleted.</div>");
+		node_target.addClass("deleted-node");
+		node_target.addClass("deleted-hidden");
 	} else {
-		;
+		// console.log("Deleted message: " + node_target.children(".chat-line").children(".message").html());
+		node_target.hide();
 	}
 }

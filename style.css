@@ -1,0 +1,32 @@
+.deleted-message-placeholder {
+	height: 10px;
+	text-align: center;
+	font-size: 9px;
+	vertical-align: middle;
+	border-width: 1px;
+	border-color: rgb(255, 192, 192);
+	border-style: solid;
+	border-radius: 5px;
+	background-image: linear-gradient(to right,rgb(255, 199, 199) 0%,rgb(255, 227, 227) 30%,rgb(255, 227, 227) 70%,rgb(255, 199, 199) 100%);
+	font-weight: 100;
+	margin: 1px;
+	padding: 1px;
+}
+
+.deleted-shown {
+	background-image: linear-gradient(to right,rgb(255, 199, 199) 0%,rgb(255, 227, 227) 30%,rgb(255, 227, 227) 70%,rgb(255, 199, 199) 100%);
+	border-width: 1px;
+	border-color: rgb(255, 192, 192);
+	border-style: solid;
+	border-radius: 5px;
+	padding: 1px;
+}
+
+.rehide-deleted-message {
+	display: block;
+	text-align: center;
+	background-color: rgb(255, 105, 105);
+	margin: 0px -2px -2px -2px;
+	border-radius: 0px 0px 5px 5px;
+	font-weight: 600;
+}

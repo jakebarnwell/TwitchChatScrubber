@@ -47,7 +47,7 @@ function filter_lengthRestrict(node_target, chat_line, text, badges) {
 	var text = $(clone_message).html().toLowerCase();
 	if(text.length > PARAM.lengthRestrict.threshold) {
 		deletion_reason[$(node_target).attr("id")] = REASON.LENGTH_RESTRICT;
-		console.log(deletion_reason);
+		// console.log(deletion_reason);
 		return DELETE_TRUE;
 	}
 
@@ -84,21 +84,21 @@ each longMessage ele is of the form
 function filter_copyPasta(node_target, chat_line, text, badges) {
 	// Replace emotes with their alt texts first before doing copyPasta comparison
 	var clone_message = chatlineToMessage(chat_line).clone();
-	console.log("Clone_message:");
-	console.log(clone_message);
+	// console.log("Clone_message:");
+	// console.log(clone_message);
 	reduceEmotes(clone_message, true);
 	reduceLinks(clone_message, true);
 
 	var text = $(clone_message).html().toLowerCase();
-	console.log("copyPasta check text: ");
-	console.log(text);
+	// console.log("copyPasta check text: ");
+	// console.log(text);
 	// copyPasta only applies to long messages
 	if(text.length > PARAM.copyPasta.lengthThreshold) {
 		var logged = CP.alreadyLogged(text);
 		if(logged) { // then it's already there so it's a copy paste
-			console.log("Is logged.");
+			// console.log("Is logged.");
 			deletion_reason[$(node_target).attr("id")] = REASON.COPY_PASTA;
-			console.log(deletion_reason);
+			// console.log(deletion_reason);
 			return DELETE_TRUE;
 		} else { // then add to listing and return false
 			CP.addListing(text);

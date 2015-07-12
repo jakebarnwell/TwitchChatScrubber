@@ -9,7 +9,7 @@ var CONSTS = {
 
 var OPTION = {
 	deletedMessage: {
-		showMarker: false
+		showMarker: true
 	},
 
 	reduceLinks: CONSTS.LINKPLAINTEXT,
@@ -22,7 +22,7 @@ var FILTER_OPTION = {
 	lengthRestrict: true,
 	byAccountStatus: false,
 	triggerPhrase: false,
-	copyPasta: false,
+	copyPasta: true,
 }
 
 var MUTATE_OPTION = {
