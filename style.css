@@ -1,3 +1,5 @@
+/* gradients made at http://gradientgenerator.com */
+
 .deleted-message-placeholder {
 	height: 10px;
 	text-align: center;
@@ -7,7 +9,7 @@
 	border-color: rgb(255, 192, 192);
 	border-style: solid;
 	border-radius: 5px;
-	background-image: linear-gradient(to right,rgb(255, 199, 199) 0%,rgb(255, 227, 227) 30%,rgb(255, 227, 227) 70%,rgb(255, 199, 199) 100%);
+	background-image: linear-gradient(to right, rgb(255, 80, 80) 0%, rgb(255, 110, 110) 30%, rgb(255, 110, 110) 70%, rgb(255, 80, 80) 100%);
 	font-weight: 100;
 	margin: 1px;
 	padding: 1px;
@@ -20,18 +22,23 @@
 	border-style: solid;
 	border-radius: 5px;
 	padding: 1px;
+	margin: 1px;
 }
 
 .rehide-deleted-message {
+	height: 14px;
 	display: block;
 	text-align: center;
-	background-color: rgb(255, 105, 105);
+	background-image: linear-gradient(to right, rgb(255, 80, 80) 0%, rgb(255, 110, 110) 30%, rgb(255, 110, 110) 70%, rgb(255, 80, 80) 100%);
 	margin: -2px -2px 0px -2px;
 	border-radius: 5px 5px 0px 0px;
 	font-weight: 600;
 	cursor: pointer;
+	font-size: 9px;
+	-webkit-user-select: none;
 }
 
 .deleted-hidden {
 	cursor: pointer;
+	-webkit-user-select: none;
 }
