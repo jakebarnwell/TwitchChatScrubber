@@ -26,7 +26,12 @@
 	display: block;
 	text-align: center;
 	background-color: rgb(255, 105, 105);
-	margin: 0px -2px -2px -2px;
-	border-radius: 0px 0px 5px 5px;
+	margin: -2px -2px 0px -2px;
+	border-radius: 5px 5px 0px 0px;
 	font-weight: 600;
+	cursor: pointer;
+}
+
+.deleted-hidden {
+	cursor: pointer;
 }

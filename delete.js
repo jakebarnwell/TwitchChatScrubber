@@ -34,7 +34,7 @@ function deleteMessage(node_target) {
 	// }
 	var chat_line = nodeToChatline(node_target);
 	if(OPTION.deletedMessage.showMarker === true) {
-		node_target.append("<div class=\"rehide-deleted-message\">(Click to re-hide)</div>");
+		node_target.prepend("<div class=\"rehide-deleted-message\">(Click to re-hide)</div>");
 		node_target.children().hide();
 		node_target.append("<div class=\"deleted-message-placeholder\">Deleted.</div>");
 		node_target.addClass("deleted-node");
