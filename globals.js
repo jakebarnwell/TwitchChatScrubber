@@ -26,7 +26,7 @@ var OPTION = {
 var FILTER_OPTION = {
 	staffMessagePriority: true,
 	notificationPriority: true,
-	lengthRestrict: true,
+	lengthRestrict: false,
 	byAccountStatus: false,
 	triggerPhrase: false,
 	copyPasta: true,

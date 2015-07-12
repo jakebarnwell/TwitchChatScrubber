@@ -83,14 +83,15 @@ function calculateDynamicStyles() {
 			var allStyles = ""
 			for(var prop in STYLE[key].style) {
 				if(STYLE[key].style.hasOwnProperty(prop)) {
-	   				allStyles += prop + ": " + STYLE[key][prop].toString() + "; ";
+	   				allStyles += prop + ": " + STYLE[key]["style"][prop].toString() + "; ";
 				}
 			}
 			STYLE[key].styles = allStyles;
 		}
 	}
+	console.log("Testing calculateDynamicStyles:");
+	console.log(STYLE.directedMsg.styles + "||" + STYLE.directedMsgSelf.styles);
 }
-
 
 
 // Damerau-Levenshtein Distance
@@ -173,13 +174,13 @@ function applyNewStyles(node, message) {
 	}
 
 	if(node_classes.indexOf(CLASS.DIRECTEDMSG_NODE) > -1) {
-		$(message).children(CLASS.DIRECTEDMSG).css(STYLE.directedMsg.styles);
+		console.log("In applyNewStyles. message:");
+		console.log(message);
+		console.log("message.find(CLASS.DIRECTEDMSG):");
+		console.log(message.find("." + CLASS.DIRECTEDMSG));
+		$(message).find("." + CLASS.DIRECTEDMSG).css(STYLE.directedMsg.style);
 	}
 	if(node_classes.indexOf(CLASS.DIRECTEDMSG_SELF_NODE) > -1) {
-		$(node).css(STYLE.directedMsgSelf.styles);
+		$(node).css(STYLE.directedMsgSelf.style);
 	}
-}
-
-function style(classname, node) {
-
 }

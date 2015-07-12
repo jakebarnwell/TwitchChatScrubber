@@ -43,11 +43,15 @@ function mutate_directedMsg(node_target, chat_line, message, text) {
 			return firstChar + "<span class=\"" + CLASS.DIRECTEDMSG_SELF + "\">" + s + "</span>";
 		} else {
 			exists = true;
+			console.log("We're here, directed message (not self)");
 			node_target.addClass(CLASS.DIRECTEDMSG_NODE);
 			return firstChar + "<span class=\"" + CLASS.DIRECTEDMSG + "\">" + s + "</span>";
 		} //todo when it's self-user, the normal @username styles aren't applied (duh)
 	};
 	// console.log("Here.");
+	// Using the 'mentioning' class is not sufficient, since the 'mentioning' class is
+	//  only applied to the first @Occurrence in a message, not all of them, sometimes.
+	//  Other times, it doesn't seem to work at all. It's just too unreliable.
 	var newText = text.replace(regexUsername, stylizeUsername);
 	// console.log("NewText: " + newText);
 	message.html(newText);
@@ -64,4 +68,4 @@ function mutate_reduceEmotes(node_target, chat_line, message, text) {
 	} else {
 		throw new Error("Not a valid reduceEmotes option.");
 	}
-} // class is 'mentioning' for @myusername
+} // class is 'mentioning' for @myusername OR if *I* do @username 
