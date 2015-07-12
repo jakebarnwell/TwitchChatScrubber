@@ -4,7 +4,14 @@ var CONSTS = {
 	LINKPLAINTEXT: 2,
 	EMOTEPLAINTEXT: 2,
 	EMOTEREMOVE: 1,
-	DIRECTEDMSGCLASS: "directed-message"
+	CLIENTUSERNAME: "lol"
+}
+
+var CLASS = {
+	DIRECTEDMSG: "directed-message",
+	DIRECTEDMSG_NODE: "directed-message-node",
+	DIRECTEDMSG_SELF: "directed-message-self",
+	DIRECTEDMSG_SELF_NODE: "directed-message-self-node"
 }
 
 var OPTION = {
@@ -55,9 +62,25 @@ var PARAM = {
 		percentThreshold: 0.8
 	},
 	directedMsg: {
+		styles: "",
+		notifyUser: true
+	}
+}
+
+var STYLE = {
+	directedMsg: {
 		style: {
 			"color": "rgb(0, 32, 255)",
 			"font-weight": 800
+		},
+		styles: ""
+	},
+	directedMsgSelf: {
+		style: {
+			"background-color": "rgba(128, 134, 255, 0.31)",
+			"padding": "5px 0 5px 0",
+			"border-radius": "4px",
+			"margin": "2px"
 		},
 		styles: ""
 	}

@@ -73,15 +73,22 @@ function calculateMutators() {
 	return mutators;
 }
 
-function calculateDirectedMsgStyles() {
-	var styles = "";
-	for (var key in PARAM.directedMsg.style) {
-	   	if (PARAM.directedMsg.style.hasOwnProperty(key)) {
-	   		styles += key + ": " + PARAM.directedMsg.style[key].toString() + "; ";
-	    }
+function calculateDynamicStyles() {
+	// Loop through every ele of STYLE and make formatted inline CSS strings
+	//  from their included CSS properties
+	for(var key in STYLE) {
+		if(STYLE.hasOwnProperty(key)) {
+			// Loop through every CSS style property for this given key and format
+			//  them together into one inline CSS string
+			var allStyles = ""
+			for(var prop in STYLE[key].style) {
+				if(STYLE[key].style.hasOwnProperty(prop)) {
+	   				allStyles += prop + ": " + STYLE[key][prop].toString() + "; ";
+				}
+			}
+			STYLE[key].styles = allStyles;
+		}
 	}
-
-	return styles;
 }
 
 
@@ -155,4 +162,24 @@ function nodebadgesToTextbadges(nodebadges) {
 
 function chatlineToBadges(chatline) {
 	return nodebadgesToTextbadges(chatlineToNodebadges(chatline));
+}
+
+function applyNewStyles(node, message) {
+	var node_classes = node.attr("class");
+	if(node_classes) {
+		node_classes = node_classes.split(" ");
+	} else {
+		return;
+	}
+
+	if(node_classes.indexOf(CLASS.DIRECTEDMSG_NODE) > -1) {
+		$(message).children(CLASS.DIRECTEDMSG).css(STYLE.directedMsg.styles);
+	}
+	if(node_classes.indexOf(CLASS.DIRECTEDMSG_SELF_NODE) > -1) {
+		$(node).css(STYLE.directedMsgSelf.styles);
+	}
+}
+
+function style(classname, node) {
+
 }

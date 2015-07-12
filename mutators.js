@@ -21,6 +21,7 @@ function mutate_minimizeCaps(node_target, chat_line, message, text) {
 }
 
 function mutate_directedMsg(node_target, chat_line, message, text) {
+	var exists = false; // True if a @username was found.
 	// console.log("Calling mutate directed msg on:" );
 	// console.log(node_target);
 	var regexUsername = new RegExp("(^|\\W)@\\w+", "g");
@@ -36,13 +37,23 @@ function mutate_directedMsg(node_target, chat_line, message, text) {
 			s = atUsername.slice(1);
 			firstChar = atUsername[0];
 		}
-		return firstChar + "<span style=\"" + PARAM.directedMsg.styles + "\" class=\"" + CONSTS.DIRECTEDMSGCLASS + "\">" + s + "</span>";
+		if(PARAM.directedMsg.notifyUser === true && s.slice(1) === CONSTS.CLIENTUSERNAME) {
+			exists = true;
+			node_target.addClass(CLASS.DIRECTEDMSG_SELF_NODE);
+			return firstChar + "<span class=\"" + CLASS.DIRECTEDMSG_SELF + "\">" + s + "</span>";
+		} else {
+			exists = true;
+			node_target.addClass(CLASS.DIRECTEDMSG_NODE);
+			return firstChar + "<span class=\"" + CLASS.DIRECTEDMSG + "\">" + s + "</span>";
+		} //todo when it's self-user, the normal @username styles aren't applied (duh)
 	};
 	// console.log("Here.");
 	var newText = text.replace(regexUsername, stylizeUsername);
 	// console.log("NewText: " + newText);
 	message.html(newText);
-
+	if(exists === true) {
+		applyNewStyles(node_target, message);
+	}
 }
 
 function mutate_reduceEmotes(node_target, chat_line, message, text) {
@@ -53,4 +64,4 @@ function mutate_reduceEmotes(node_target, chat_line, message, text) {
 	} else {
 		throw new Error("Not a valid reduceEmotes option.");
 	}
-}
+} // class is 'mentioning' for @myusername

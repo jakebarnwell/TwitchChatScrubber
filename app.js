@@ -36,7 +36,7 @@ $(document).ready(function() {
 function TwitchChatScrubber() {
 	FILTERS = calculateFilters();
 	MUTATORS = calculateMutators();
-	PARAM.directedMsg.styles = calculateDirectedMsgStyles();
+	calculateDynamicStyles();
 	// console.log(PARAM.directedMsg.styles);
 	$(".chat-lines").delegate("div", "DOMNodeInserted", function(e) {
 		var node_target = targetToNode(e);
