@@ -69,3 +69,7 @@ function mutate_reduceEmotes(node_target, chat_line, message, text) {
 		throw new Error("Not a valid reduceEmotes option.");
 	}
 } // class is 'mentioning' for @myusername OR if *I* do @username 
+// TODO ext always loads (console message is there) but doesn't always
+//  do anything else it's supposed to
+// UPDATE: It seems that it only doesn't work when .chat-lines doesn't exist in
+//  time... in other words, we're still having issues with delegate -__-

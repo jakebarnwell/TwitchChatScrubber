@@ -29,6 +29,9 @@ or hide usernames so they're not annoying, or truncate
 // option to show marker per delete-reason (probably not)
 $(document).ready(function() {
 	$(".chat-lines").ready(function() {
+	alert("chatlines is ready");
+
+		$(".real").html("CLASS-LINES IS READY.");
 		TwitchChatScrubber();
 	});
 });
@@ -38,6 +41,7 @@ function TwitchChatScrubber() {
 	MUTATORS = calculateMutators();
 	calculateDynamicStyles();
 	// console.log(PARAM.directedMsg.styles);
+	$(".channel-name").html($(".chat-lines").html());
 	$(".chat-lines").delegate("div", "DOMNodeInserted", function(e) {
 		var node_target = targetToNode(e);
 
