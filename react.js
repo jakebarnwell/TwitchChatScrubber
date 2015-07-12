@@ -16,7 +16,3 @@ $("body").delegate(".rehide-deleted-message", "click", function(e) {
 	node_target.removeClass("deleted-shown");
 });
 
-$("body").delegate(CONSTS.NEEDSTYLE, "ready", function(e) {
-	console.log("NEED STYLES!!!!!!!");
-});
-// TODO @username has class 'mentions'
