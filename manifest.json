@@ -38,5 +38,6 @@
 		"storage",
 		"http://*.twitch.tv/*",
 		"https://*.twitch.tv/*"
-	]
+	],
+	"options_page": "settings.html"
 }

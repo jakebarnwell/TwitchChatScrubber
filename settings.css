@@ -1,0 +1,19 @@
+body, html {
+	width: 500px;
+}
+
+.header {
+
+}
+
+.sub-header {
+	padding-left: 25px;
+}
+
+.disabled {
+	color: rgb(108, 108, 108);
+}
+
+.enabled {
+	color: rgb(70, 70, 70);
+}
