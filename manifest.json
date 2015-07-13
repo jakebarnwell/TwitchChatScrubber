@@ -36,8 +36,14 @@
 	"permissions": [
 		"activeTab",
 		"storage",
+		"tabs",
+		"alarms",
 		"http://*.twitch.tv/*",
 		"https://*.twitch.tv/*"
 	],
-	"options_page": "settings.html"
+	"background": {
+    	// "scripts": ["ongoing.js"],
+    	"page": "background.html",
+    	"persistent": false
+ 	}
 }

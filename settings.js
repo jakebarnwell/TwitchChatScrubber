@@ -1,7 +1,6 @@
 
 var checkboxes = $("[type='checkbox'");
 var allOptions_currentValues = {};
-console.log(CONSTS.LINKREMOVE);
 
 $("[type='checkbox'").change(function() {
 	if ($(this).is(':checked')) {
@@ -35,9 +34,14 @@ function saveChanges() {
 	  message('Error: No value specified');
 	  return;
 	}
+	console.log("theValue: " + theValue);
 	// Save it using the Chrome extension storage API.
 	chrome.storage.sync.set({'value': theValue}, function() {
 	  // Notify that we saved.
-	  message('Settings saved');
+	  console.log('Settings saved');
+	});
+	chrome.storage.sync.get(function(e) {
+		console.log(e);
+		$("textarea").html(e.toString());
 	});
 }

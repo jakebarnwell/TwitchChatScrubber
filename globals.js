@@ -14,77 +14,86 @@ var CLASS = {
 	DIRECTEDMSG_SELF_NODE: "directed-message-self-node"
 }
 
-var OPTION = {
-	deletedMessage: {
-		showMarker: true
+/* User can change this stuff : */
+var Default = {
+	OPTION: {
+		deletedMessage: {
+			showMarker: true
+		},
+
+		reduceLinks: CONSTS.LINKPLAINTEXT,
+		reduceEmotes: CONSTS.EMOTEREMOVE,
 	},
 
-	reduceLinks: CONSTS.LINKPLAINTEXT,
-	reduceEmotes: CONSTS.EMOTEREMOVE,
-}
-
-var FILTER_OPTION = {
-	staffMessagePriority: true,
-	notificationPriority: true,
-	lengthRestrict: true,
-	byAccountStatus: false,
-	triggerPhrase: false,
-	copyPasta: true,
-}
-
-var MUTATE_OPTION = {
-	minimizeCaps: false,
-	directedMsg: true,
-	reduceEmotes: true,
-	reduceLinks: false
-}
-
-
-
-var PARAM = {
-	lengthRestrict: {
-		threshold: 10
+	FILTER_OPTION: {
+		staffMessagePriority: true,
+		notificationPriority: true,
+		lengthRestrict: true,
+		byAccountStatus: false,
+		triggerPhrase: false,
+		copyPasta: true,
 	},
-	triggerPhrase: {
-		delimited: true,
-		phrases: []
+
+	MUTATE_OPTION: {
+		minimizeCaps: false,
+		directedMsg: true,
+		reduceEmotes: true,
+		reduceLinks: false
 	},
-	byAccountStatus: {
-		hidePlebs: true,
-		hideSubs: true
+
+	PARAM: {
+		lengthRestrict: {
+			threshold: 10
+		},
+		triggerPhrase: {
+			delimited: true,
+			phrases: []
+		},
+		byAccountStatus: {
+			hidePlebs: true,
+			hideSubs: true
+		},
+		copyPasta: {
+			lengthThreshold: 5,
+			expiration: 1000 * 60 * 1 // 1 minute
+		},
+		minimizeCaps: {
+			lengthThreshold: 5,
+			percentThreshold: 0.8
+		},
+		directedMsg: {
+			styles: "",
+			notifyUser: true
+		}
 	},
-	copyPasta: {
-		lengthThreshold: 5,
-		expiration: 1000 * 60 * 1 // 1 minute
-	},
-	minimizeCaps: {
-		lengthThreshold: 5,
-		percentThreshold: 0.8
-	},
-	directedMsg: {
-		styles: "",
-		notifyUser: true
+
+	STYLE: {
+		directedMsg: {
+			style: {
+				"color": "rgb(0, 32, 255)",
+				"font-weight": 800
+			},
+			styles: ""
+		},
+		directedMsgSelf: {
+			style: {
+				"background-color": "rgba(128, 134, 255, 0.31)",
+				"padding": "5px 0 5px 0",
+				"border-radius": "4px",
+				"margin": "2px"
+			},
+			styles: ""
+		}
 	}
 }
 
-var STYLE = {
-	directedMsg: {
-		style: {
-			"color": "rgb(0, 32, 255)",
-			"font-weight": 800
-		},
-		styles: ""
-	},
-	directedMsgSelf: {
-		style: {
-			"background-color": "rgba(128, 134, 255, 0.31)",
-			"padding": "5px 0 5px 0",
-			"border-radius": "4px",
-			"margin": "2px"
-		},
-		styles: ""
-	}
-}
+var OPTION = {};
+var FILTER_OPTION = {};
+var MUTATE_OPTION = {};
+var PARAM = {};
+var STYLE = {};
+
+/* End user-changeable stuff */
 
 var ALL_POSSIBLE_FILTERS = {
 	staffMessagePriority: {

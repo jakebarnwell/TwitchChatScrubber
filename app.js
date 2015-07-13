@@ -37,9 +37,7 @@ $(document).ready(function() {
 });
 
 function TwitchChatScrubber() {
-	FILTERS = calculateFilters();
-	MUTATORS = calculateMutators();
-	calculateDynamicStyles();
+	loadSettings();
 	$(".chat-lines").delegate("div", "DOMNodeInserted", function(e) {
 		var node_target = targetToNode(e);
 
@@ -61,4 +59,41 @@ function handle(node_target) {
 	} else {
 		maybeModifyMessage(node_target, chat_line, message, text);
 	}
+}
+
+function loadSettings() {
+	// OPTION = loadOption();
+	// FILTER_OPTION = loadFilterOption();
+	// MUTATE_OPTION = loadMutateOption();
+	// PARAM = loadParam();
+	// STYLE = loadStyle();
+	// console.log("DEFAULT:");
+	// console.log(DEFAULT);
+	loadOption();
+	OPTION = Default.OPTION;
+	FILTER_OPTION = Default.FILTER_OPTION;
+	MUTATE_OPTION = Default.MUTATE_OPTION;
+	PARAM = Default.PARAM;
+	STYLE = Default.STYLE;
+
+	FILTERS = calculateFilters();
+	MUTATORS = calculateMutators();
+	calculateDynamicStyles();
+}
+
+function loadOption() {
+	chrome.runtime.sendMessage({msg: "greeting"}, function(response) {
+  		console.log(response);
+	});
+	chrome.runtime.sendMessage({msg: "REQ:ALL"}, function(response) {
+  		console.log(response);
+	});
+	// chrome.extension.sendRequest({localstorage: "email"}, function(response) {
+	// var MAIL = response.email;
+	// var flags = document.getElementById('flags');
+	// if(flags){
+	// document.getElementById('flags').innerHTML = prev + 
+	// "<a href='http://mvmacd.comlu.com/craigslist.php?user&amp;addr="+MAIL+"'>Email this</a>" 
+	// }
+	// });
 }
